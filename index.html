@@ -84,9 +84,55 @@
     
     html,body{height:100%;margin:0;font-family:'Inter',system-ui,-apple-system,Arial,sans-serif;color:#e6eef8;background:linear-gradient(180deg,#071029 0%, #071b2f 100%);line-height:1.5}
     
-    .app{max-width:1800px;margin:20px auto;padding:20px;display:flex;flex-direction:column;gap:20px;min-height:calc(100vh - 80px);align-items:center}
-    
-    .app.multi-column{flex-direction:row;flex-wrap:wrap;align-items:stretch}
+    /* Layout com tabela 3 colunas */
+    .app {
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding: 20px;
+      min-height: calc(100vh - 40px);
+      display: table;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 20px;
+    }
+
+    .app-row {
+      display: table-row;
+      width: 100%;
+    }
+
+    .card-column {
+      display: table-cell;
+      vertical-align: top;
+      width: 33.333%;
+      min-width: 300px;
+      padding: 0;
+      position: relative;
+    }
+
+    /* Colunas ajustáveis com resize */
+    .card-column:not(:last-child) {
+      border-right: 3px solid rgba(255,255,255,0.1);
+      cursor: col-resize;
+      position: relative;
+    }
+
+    .card-column:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: -6px;
+      width: 12px;
+      height: 100%;
+      cursor: col-resize;
+      background: transparent;
+      z-index: 1000;
+    }
+
+    .card-column:not(:last-child):hover::after {
+      background: rgba(31,182,255,0.2);
+    }
     
     .layout-toggle{
       position:fixed;
@@ -114,18 +160,8 @@
     }
     
     .card-container{
-      flex:1;
-      min-width:350px;
-      max-width:800px;
-    }
-    
-    @media (min-width: 1024px) {
-      .card-container.controls { flex: 0 0 500px; }
-      .card-container.main { flex: 1; min-width: 600px; }
-    }
-    
-    @media (min-width: 1400px) {
-      .card-container.controls { flex: 0 0 600px; }
+      width: 100%;
+      margin-bottom: 20px;
     }
     
     .card{
@@ -140,10 +176,15 @@
       position:relative;
       resize:both;
       overflow:auto;
-      min-width:300px;
-      min-height:200px;
-      max-width:100vw;
-      max-height:100vh;
+      width:100%;
+      min-height:250px;
+      height:auto;
+      box-sizing: border-box;
+    }
+
+    /* Cards são redimensionáveis */
+    .card:hover {
+      border-color: rgba(31,182,255,0.3);
     }
     
     .card.dragging{
@@ -726,6 +767,324 @@
       50%{opacity:1;transform:translate(-50%, -50%) scale(1)}
     }
     
+    /* Splash Screen Styles */
+    .splash-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #071029 0%, #0a1a3a 50%, #071b2f 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 1;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+      overflow: hidden;
+    }
+    
+    .splash-screen.fade-out {
+      opacity: 0;
+      visibility: hidden;
+    }
+    
+    .splash-content {
+      text-align: center;
+      color: #fff;
+      z-index: 2;
+      max-width: 600px;
+      padding: 20px;
+      animation: splashFadeIn 1s ease-out;
+    }
+    
+    .splash-logo {
+      margin-bottom: 40px;
+      animation: splashPulse 2s ease-in-out infinite;
+    }
+    
+    .logo-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 0 20px rgba(31, 182, 255, 0.5));
+    }
+    
+    .logo-title {
+      font-size: 48px;
+      font-weight: 900;
+      background: linear-gradient(45deg, #1fb6ff, #00d2ff, #1fb6ff);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientShift 3s ease-in-out infinite;
+      margin-bottom: 10px;
+      text-shadow: 0 4px 20px rgba(31, 182, 255, 0.3);
+    }
+    
+    .logo-subtitle {
+      font-size: 18px;
+      color: #98a0b3;
+      font-weight: 400;
+      opacity: 0.9;
+    }
+    
+    .splash-features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin: 40px 0;
+      max-width: 500px;
+    }
+    
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 16px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(31, 182, 255, 0.2);
+      backdrop-filter: blur(10px);
+      animation: featureSlideIn 0.6s ease-out forwards;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    
+    .feature:nth-child(1) { animation-delay: 0.2s; }
+    .feature:nth-child(2) { animation-delay: 0.4s; }
+    .feature:nth-child(3) { animation-delay: 0.6s; }
+    .feature:nth-child(4) { animation-delay: 0.8s; }
+    
+    .feature-icon {
+      font-size: 24px;
+      filter: drop-shadow(0 0 10px rgba(31, 182, 255, 0.4));
+    }
+    
+    .feature-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: #e6eef8;
+    }
+    
+    .splash-loading {
+      margin: 50px 0 30px 0;
+      animation: loadingFadeIn 0.5s ease-out 1s both;
+    }
+    
+    .loading-text {
+      font-size: 18px;
+      color: #98a0b3;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+    
+    .loading-bar {
+      width: 300px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      margin: 0 auto 15px auto;
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .loading-progress {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #1fb6ff, #00d2ff, #1fb6ff);
+      background-size: 200% 100%;
+      border-radius: 3px;
+      animation: progressFlow 2s ease-in-out infinite;
+      transition: width 0.3s ease;
+      box-shadow: 0 0 10px rgba(31, 182, 255, 0.5);
+    }
+    
+    .loading-percentage {
+      font-size: 14px;
+      color: #1fb6ff;
+      font-weight: 700;
+    }
+    
+    .splash-credits {
+      animation: creditsFadeIn 0.5s ease-out 1.5s both;
+    }
+    
+    .credits-text {
+      font-size: 14px;
+      color: #98a0b3;
+      margin-bottom: 8px;
+    }
+    
+    .credits-company {
+      font-size: 16px;
+      color: #1fb6ff;
+      font-weight: 700;
+      text-shadow: 0 2px 10px rgba(31, 182, 255, 0.3);
+    }
+    
+    .splash-particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+    
+    .particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: rgba(31, 182, 255, 0.6);
+      border-radius: 50%;
+      animation: particleFloat 10s linear infinite;
+    }
+    
+    @keyframes splashFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes splashPulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+    
+    @keyframes gradientShift {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+    
+    @keyframes featureSlideIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes loadingFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes creditsFadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    
+    @keyframes progressFlow {
+      0% {
+        background-position: -200% 0;
+      }
+      100% {
+        background-position: 200% 0;
+      }
+    }
+    
+    @keyframes particleFloat {
+      0% {
+        transform: translateY(100vh) scale(0);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) scale(0);
+        opacity: 0;
+      }
+    }
+    
+    /* Mobile responsive adjustments */
+    @media (max-width: 768px) {
+      .splash-content {
+        padding: 20px;
+        max-width: 90%;
+      }
+      
+      .logo-icon {
+        font-size: 60px;
+      }
+      
+      .logo-title {
+        font-size: 32px;
+      }
+      
+      .logo-subtitle {
+        font-size: 16px;
+      }
+      
+      .splash-features {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        margin: 30px 0;
+      }
+      
+      .feature {
+        padding: 12px 16px;
+      }
+      
+      .loading-bar {
+        width: 250px;
+      }
+    }
+    
+    /* Hide main content initially */
+    .app {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease;
+    }
+    
+    .app.loaded {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .layout-toggle {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease;
+    }
+    
+    .layout-toggle.loaded {
+      opacity: 1;
+      visibility: visible;
+    }
+    
     /* Rhythm Patches */
     .rhythm-patches{
       background:rgba(0,0,0,0.2);
@@ -842,8 +1201,23 @@
     
     /* Responsive adjustments */
     @media (max-width: 768px) {
-      .app { padding: 12px; margin: 10px auto; flex-direction: column; }
-      .card-container { min-width: unset; max-width: unset; }
+      .app {
+        display: block;
+        padding: 12px;
+        border-spacing: 0;
+      }
+      .app-row {
+        display: block;
+      }
+      .card-column {
+        display: block;
+        width: 100%;
+        margin-bottom: 15px;
+        border-right: none;
+      }
+      .card-column::after {
+        display: none;
+      }
       .card { padding: 16px; }
       .card-title { font-size: 18px; }
       .section-title { font-size: 14px; }
@@ -856,16 +1230,89 @@
       .patch-btn { padding: 6px 4px; }
       .patch-icon { font-size: 16px; }
     }
+
+    /* Controles de redimensionamento de colunas */
+    .column-resizer {
+      position: absolute;
+      top: 0;
+      right: -6px;
+      width: 12px;
+      height: 100%;
+      cursor: col-resize;
+      background: transparent;
+      z-index: 1001;
+      user-select: none;
+    }
+
+    .column-resizer:hover {
+      background: rgba(31,182,255,0.3);
+    }
+
+    .column-resizer.dragging {
+      background: rgba(31,182,255,0.6);
+    }
   </style>
 </head>
 <body>
+  <!-- Splash Screen -->
+  <div id="splashScreen" class="splash-screen">
+    <div class="splash-content">
+      <div class="splash-logo">
+        <div class="logo-icon">🎛️</div>
+        <div class="logo-text">
+          <div class="logo-title">SynthBat Studio</div>
+          <div class="logo-subtitle">Sintetizador e Sequenciador Musical</div>
+        </div>
+      </div>
+      
+      <div class="splash-features">
+        <div class="feature">
+          <span class="feature-icon">🥁</span>
+          <span class="feature-text">16 Pads de Bateria</span>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">🎹</span>
+          <span class="feature-text">Sintetizador Completo</span>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">🎵</span>
+          <span class="feature-text">Sequenciador 32 Steps</span>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">🎼</span>
+          <span class="feature-text">Patches de Ritmo</span>
+        </div>
+      </div>
+      
+      <div class="splash-loading">
+        <div class="loading-text">Carregando...</div>
+        <div class="loading-bar">
+          <div class="loading-progress" id="loadingProgress"></div>
+        </div>
+        <div class="loading-percentage" id="loadingPercentage">0%</div>
+      </div>
+      
+      <div class="splash-credits">
+        <div class="credits-text">Desenvolvido por Julio Campos Machado</div>
+        <div class="credits-company">Like Look Solutions</div>
+      </div>
+    </div>
+    
+    <div class="splash-particles" id="splashParticles">
+      <!-- Particles will be generated by JavaScript -->
+    </div>
+  </div>
+
   <!-- Layout Toggle Button -->
   <button class="layout-toggle" id="layoutToggle">📋 LINHA ÚNICA</button>
   
   <div class="app" id="appContainer">
-    <!-- Controls Card -->
-    <div class="card-container controls">
-      <div class="card" id="controlsCard" draggable="true">
+    <div class="app-row">
+      <!-- Coluna 1: Controles -->
+      <div class="card-column" id="column1">
+        <div class="column-resizer" data-column="1"></div>
+        <div class="card-container controls">
+          <div class="card" id="controlsCard" draggable="true">
         <div class="card-header">
           <div>
             <h1 class="card-title">🎵 SynthBat Studio</h1>
@@ -963,11 +1410,15 @@
         <div class="preset-grid" id="presets"></div>
         </div>
       </div>
-    </div>
+          </div>
+        </div>
+      </div>
 
-    <!-- XY Pad Card -->
-    <div class="card-container main">
-      <div class="card" id="xyCard" draggable="true">
+      <!-- Coluna 2: XY Pad -->
+      <div class="card-column" id="column2">
+        <div class="column-resizer" data-column="2"></div>
+        <div class="card-container main">
+          <div class="card" id="xyCard" draggable="true">
         <div class="card-header">
           <div>
             <h2 class="card-title">🎚️ Controle XY</h2>
@@ -994,11 +1445,14 @@
           </div>
         </div>
       </div>
-    </div>
-    
-    <!-- Sequencer Card -->
-    <div class="card-container main">
-      <div class="card" id="sequencerCard" draggable="true">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Coluna 3: Sequenciador -->
+      <div class="card-column" id="column3">
+        <div class="card-container main">
+          <div class="card" id="sequencerCard" draggable="true">
         <div class="card-header">
           <div>
             <h2 class="card-title">🎵 Sequenciador</h2>
@@ -1076,6 +1530,8 @@
         
         <div class="meta" style="margin-top:12px;">
           💡 Dica: Clique nos pads em modo GRAVAR para adicionar à trilha, ou clique diretamente nas células para programar beats
+        </div>
+          </div>
         </div>
       </div>
     </div>
@@ -2059,6 +2515,128 @@ document.addEventListener('touchend', (e) => {
 // Load saved layout on startup
 loadLayout();
 
+// --- Splash Screen Implementation ---
+class SplashScreen {
+  constructor() {
+    this.splashElement = document.getElementById('splashScreen');
+    this.progressElement = document.getElementById('loadingProgress');
+    this.percentageElement = document.getElementById('loadingPercentage');
+    this.particlesContainer = document.getElementById('splashParticles');
+    this.progress = 0;
+    this.isComplete = false;
+    
+    this.init();
+  }
+  
+  init() {
+    this.createParticles();
+    this.startLoading();
+  }
+  
+  createParticles() {
+    const particleCount = 50;
+    
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      
+      // Random positioning and delay
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 10 + 's';
+      particle.style.animationDuration = (8 + Math.random() * 4) + 's';
+      
+      // Random sizes
+      const size = 2 + Math.random() * 3;
+      particle.style.width = size + 'px';
+      particle.style.height = size + 'px';
+      
+      // Random opacity
+      particle.style.opacity = 0.3 + Math.random() * 0.5;
+      
+      this.particlesContainer.appendChild(particle);
+    }
+  }
+  
+  startLoading() {
+    const loadingSteps = [
+      { text: 'Inicializando Web Audio...', duration: 800 },
+      { text: 'Carregando sintetizadores...', duration: 600 },
+      { text: 'Preparando sequenciador...', duration: 700 },
+      { text: 'Configurando interface...', duration: 500 },
+      { text: 'Carregando patches de ritmo...', duration: 400 },
+      { text: 'Finalizando...', duration: 300 }
+    ];
+    
+    let currentStep = 0;
+    const totalDuration = loadingSteps.reduce((sum, step) => sum + step.duration, 0);
+    let elapsed = 0;
+    
+    const progressInterval = setInterval(() => {
+      elapsed += 50;
+      this.progress = Math.min((elapsed / totalDuration) * 100, 100);
+      this.updateProgress();
+      
+      if (this.progress >= 100) {
+        clearInterval(progressInterval);
+        setTimeout(() => this.complete(), 500);
+      }
+    }, 50);
+    
+    // Update loading text
+    const textInterval = setInterval(() => {
+      if (currentStep < loadingSteps.length) {
+        const loadingText = document.querySelector('.loading-text');
+        if (loadingText) {
+          loadingText.textContent = loadingSteps[currentStep].text;
+        }
+        
+        setTimeout(() => {
+          currentStep++;
+          if (currentStep >= loadingSteps.length) {
+            clearInterval(textInterval);
+          }
+        }, loadingSteps[currentStep]?.duration || 0);
+      }
+    }, 100);
+  }
+  
+  updateProgress() {
+    if (this.progressElement) {
+      this.progressElement.style.width = this.progress + '%';
+    }
+    
+    if (this.percentageElement) {
+      this.percentageElement.textContent = Math.round(this.progress) + '%';
+    }
+  }
+  
+  complete() {
+    if (this.isComplete) return;
+    this.isComplete = true;
+    
+    // Fade out splash screen
+    this.splashElement.classList.add('fade-out');
+    
+    // Show main application
+    setTimeout(() => {
+      document.querySelector('.app').classList.add('loaded');
+      document.querySelector('.layout-toggle').classList.add('loaded');
+      
+      // Remove splash screen from DOM
+      setTimeout(() => {
+        if (this.splashElement.parentNode) {
+          this.splashElement.parentNode.removeChild(this.splashElement);
+        }
+      }, 800);
+    }, 400);
+    
+    console.log('🎵 SynthBat Studio carregado com sucesso!');
+  }
+}
+
+// Initialize splash screen
+const splash = new SplashScreen();
+
 // --- Rhythm Patches System ---
 const rhythmPatches = {
   funk: {
@@ -2379,6 +2957,160 @@ document.head.appendChild(layoutNotificationStyles);
 
 // Load layout mode on startup
 loadLayoutMode();
+
+// --- Column Resizing Functionality ---
+class ColumnResizer {
+  constructor() {
+    this.isResizing = false;
+    this.currentColumn = null;
+    this.startX = 0;
+    this.startWidth = 0;
+    this.init();
+  }
+
+  init() {
+    // Add event listeners to column resizers
+    document.querySelectorAll('.column-resizer').forEach(resizer => {
+      resizer.addEventListener('mousedown', (e) => this.startResize(e));
+      resizer.addEventListener('touchstart', (e) => this.startResize(e), {passive: false});
+    });
+
+    // Global mouse events
+    document.addEventListener('mousemove', (e) => this.doResize(e));
+    document.addEventListener('mouseup', () => this.stopResize());
+    document.addEventListener('touchmove', (e) => this.doResize(e), {passive: false});
+    document.addEventListener('touchend', () => this.stopResize());
+  }
+
+  startResize(e) {
+    e.preventDefault();
+    this.isResizing = true;
+    
+    const resizer = e.target;
+    const columnId = resizer.dataset.column;
+    this.currentColumn = document.getElementById(`column${columnId}`);
+    
+    // Get starting position
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    this.startX = clientX;
+    this.startWidth = this.currentColumn.offsetWidth;
+    
+    // Add visual feedback
+    resizer.classList.add('dragging');
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    
+    // Add overlay to prevent iframe interference
+    this.addResizeOverlay();
+  }
+
+  doResize(e) {
+    if (!this.isResizing || !this.currentColumn) return;
+    
+    e.preventDefault();
+    
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    const deltaX = clientX - this.startX;
+    const newWidth = this.startWidth + deltaX;
+    
+    // Set minimum and maximum widths
+    const minWidth = 250;
+    const maxWidth = window.innerWidth * 0.7;
+    const constrainedWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+    
+    // Apply new width
+    this.currentColumn.style.width = constrainedWidth + 'px';
+    
+    // Update table layout
+    const app = document.getElementById('appContainer');
+    app.style.tableLayout = 'auto';
+  }
+
+  stopResize() {
+    if (!this.isResizing) return;
+    
+    this.isResizing = false;
+    this.currentColumn = null;
+    
+    // Remove visual feedback
+    document.querySelectorAll('.column-resizer').forEach(resizer => {
+      resizer.classList.remove('dragging');
+    });
+    
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+    
+    // Remove overlay
+    this.removeResizeOverlay();
+    
+    // Save column widths
+    this.saveColumnWidths();
+  }
+
+  addResizeOverlay() {
+    const overlay = document.createElement('div');
+    overlay.id = 'resize-overlay';
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 10000;
+      cursor: col-resize;
+      background: transparent;
+    `;
+    document.body.appendChild(overlay);
+  }
+
+  removeResizeOverlay() {
+    const overlay = document.getElementById('resize-overlay');
+    if (overlay) {
+      document.body.removeChild(overlay);
+    }
+  }
+
+  saveColumnWidths() {
+    const widths = {
+      column1: document.getElementById('column1').offsetWidth,
+      column2: document.getElementById('column2').offsetWidth,
+      column3: document.getElementById('column3').offsetWidth
+    };
+    localStorage.setItem('synthbat_column_widths', JSON.stringify(widths));
+  }
+
+  loadColumnWidths() {
+    const saved = localStorage.getItem('synthbat_column_widths');
+    if (!saved) return;
+    
+    try {
+      const widths = JSON.parse(saved);
+      
+      Object.keys(widths).forEach(columnId => {
+        const column = document.getElementById(columnId);
+        if (column && widths[columnId]) {
+          column.style.width = widths[columnId] + 'px';
+        }
+      });
+      
+      // Set table layout to auto to respect custom widths
+      const app = document.getElementById('appContainer');
+      app.style.tableLayout = 'auto';
+      
+      console.log('📐 Larguras das colunas restauradas');
+    } catch (error) {
+      console.error('Erro ao carregar larguras das colunas:', error);
+    }
+  }
+}
+
+// Initialize column resizing
+const columnResizer = new ColumnResizer();
+
+// Load saved column widths after a short delay to ensure DOM is ready
+setTimeout(() => {
+  columnResizer.loadColumnWidths();
+}, 100);
 
 // Final note: friendly help
 console.log('🎵 SynthBat Studio com Patches de Ritmo carregado! 🎵');
