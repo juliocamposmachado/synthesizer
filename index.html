@@ -11,14 +11,21 @@
     
     html,body{height:100%;margin:0;font-family:'Inter',system-ui,-apple-system,Arial,sans-serif;color:#e6eef8;background:linear-gradient(180deg,#071029 0%, #071b2f 100%);line-height:1.5}
     
-    .app{max-width:1800px;margin:20px auto;padding:20px;display:grid;grid-template-columns:1fr;gap:20px}
+    .app{max-width:1800px;margin:20px auto;padding:20px;display:flex;flex-wrap:wrap;gap:20px;min-height:calc(100vh - 80px)}
+    
+    .card-container{
+      flex:1;
+      min-width:350px;
+      max-width:800px;
+    }
     
     @media (min-width: 1024px) {
-      .app { grid-template-columns: 500px 1fr; }
+      .card-container.controls { flex: 0 0 500px; }
+      .card-container.main { flex: 1; min-width: 600px; }
     }
     
     @media (min-width: 1400px) {
-      .app { grid-template-columns: 600px 1fr; }
+      .card-container.controls { flex: 0 0 600px; }
     }
     
     .card{
@@ -28,6 +35,24 @@
       box-shadow:0 8px 32px rgba(2,6,23,0.4);
       border:1px solid rgba(255,255,255,0.08);
       backdrop-filter:blur(10px);
+      cursor:move;
+      transition:all 0.3s ease;
+      position:relative;
+    }
+    
+    .card.dragging{
+      opacity:0.7;
+      transform:rotate(3deg) scale(1.02);
+      z-index:1000;
+      box-shadow:0 15px 50px rgba(31,182,255,0.3);
+    }
+    
+    .card.collapsed .card-content{
+      display:none;
+    }
+    
+    .card.collapsed{
+      padding:12px 20px;
     }
     
     .card-header{
@@ -37,6 +62,47 @@
       margin-bottom:20px;
       padding-bottom:12px;
       border-bottom:1px solid rgba(255,255,255,0.1);
+      cursor:grab;
+      user-select:none;
+    }
+    
+    .card-header:active{
+      cursor:grabbing;
+    }
+    
+    .card-controls{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    
+    .card-btn{
+      background:rgba(255,255,255,0.1);
+      border:1px solid rgba(255,255,255,0.2);
+      color:#fff;
+      width:28px;
+      height:28px;
+      border-radius:6px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:14px;
+      transition:all 0.2s ease;
+      user-select:none;
+    }
+    
+    .card-btn:hover{
+      background:var(--accent);
+      border-color:var(--accent);
+      color:#022233;
+      transform:scale(1.1);
+    }
+    
+    .collapse-btn.collapsed{
+      background:var(--warning);
+      border-color:var(--warning);
+      color:#022233;
     }
     
     .card-title{
@@ -445,9 +511,84 @@
       transform:translateY(-1px);
     }
     
+    /* Drag and Drop */
+    .drop-zone{
+      min-height:100px;
+      border:2px dashed rgba(255,255,255,0.2);
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--muted);
+      font-size:14px;
+      margin:10px;
+      transition:all 0.3s ease;
+      background:rgba(255,255,255,0.02);
+    }
+    
+    .drop-zone.drag-over{
+      border-color:var(--accent);
+      background:rgba(31,182,255,0.1);
+      color:var(--accent);
+      transform:scale(1.02);
+    }
+    
+    .drop-hint{
+      display:none;
+      position:fixed;
+      top:10px;
+      right:10px;
+      background:var(--accent);
+      color:#022233;
+      padding:8px 12px;
+      border-radius:8px;
+      font-size:12px;
+      font-weight:600;
+      z-index:10001;
+      animation:bounceIn 0.3s ease;
+    }
+    
+    .drop-hint.show{
+      display:block;
+    }
+    
+    @keyframes bounceIn{
+      0%{opacity:0;transform:scale(0.3)}
+      50%{opacity:1;transform:scale(1.05)}
+      100%{opacity:1;transform:scale(1)}
+    }
+    
+    /* Layout reorganization indicators */
+    .layout-indicator{
+      position:fixed;
+      top:50%;
+      left:50%;
+      transform:translate(-50%, -50%);
+      background:rgba(0,0,0,0.8);
+      color:#fff;
+      padding:16px 24px;
+      border-radius:12px;
+      font-size:14px;
+      font-weight:600;
+      z-index:10002;
+      display:none;
+      backdrop-filter:blur(10px);
+    }
+    
+    .layout-indicator.show{
+      display:block;
+      animation:fadeInOut 2s ease;
+    }
+    
+    @keyframes fadeInOut{
+      0%,100%{opacity:0;transform:translate(-50%, -50%) scale(0.8)}
+      50%{opacity:1;transform:translate(-50%, -50%) scale(1)}
+    }
+    
     /* Responsive adjustments */
     @media (max-width: 768px) {
-      .app { padding: 12px; margin: 10px auto; }
+      .app { padding: 12px; margin: 10px auto; flex-direction: column; }
+      .card-container { min-width: unset; max-width: unset; }
       .card { padding: 16px; }
       .card-title { font-size: 18px; }
       .section-title { font-size: 14px; }
@@ -455,19 +596,26 @@
       .seq-controls { gap: 6px; }
       .seq-btn { padding: 6px 10px; font-size: 11px; }
       #xyCanvas { height: 300px; }
+      .card-btn { width: 24px; height: 24px; font-size: 12px; }
     }
   </style>
 </head>
 <body>
-  <div class="app">
-    <!-- Left Panel: Controls -->
-    <div class="card">
-      <div class="card-header">
-        <div>
-          <h1 class="card-title">🎵 SynthBat Studio</h1>
-          <p class="card-subtitle">Sintetizador e Sequenciador Musical</p>
+  <div class="app" id="appContainer">
+    <!-- Controls Card -->
+    <div class="card-container controls">
+      <div class="card" id="controlsCard" draggable="true">
+        <div class="card-header">
+          <div>
+            <h1 class="card-title">🎵 SynthBat Studio</h1>
+            <p class="card-subtitle">Sintetizador e Sequenciador Musical</p>
+          </div>
+          <div class="card-controls">
+            <div class="card-btn collapse-btn" title="Recolher/Expandir" data-card="controlsCard">−</div>
+            <div class="card-btn" title="Arrastar para reorganizar">⋮⋮</div>
+          </div>
         </div>
-      </div>
+        <div class="card-content">
 
       <!-- Drum Pads Section -->
       <div class="section">
@@ -552,19 +700,24 @@
       <div class="section">
         <div class="section-title">💾 Presets</div>
         <div class="preset-grid" id="presets"></div>
+        </div>
       </div>
     </div>
 
-    <!-- Right Panel: XY Pad & Sequencer -->
-    <div class="card">
-      <!-- XY Pad Section -->
-      <div class="section">
+    <!-- XY Pad Card -->
+    <div class="card-container main">
+      <div class="card" id="xyCard" draggable="true">
         <div class="card-header">
           <div>
             <h2 class="card-title">🎚️ Controle XY</h2>
             <p class="card-subtitle">Área de controle em tempo real</p>
           </div>
+          <div class="card-controls">
+            <div class="card-btn collapse-btn" title="Recolher/Expandir" data-card="xyCard">−</div>
+            <div class="card-btn" title="Arrastar para reorganizar">⋮⋮</div>
+          </div>
         </div>
+        <div class="card-content">
         
         <canvas id="xyCanvas"></canvas>
         
@@ -580,10 +733,22 @@
           </div>
         </div>
       </div>
-      
-      <!-- Sequencer Section -->
-      <div class="section">
-        <div class="section-title">🎵 Sequenciador (16 Steps)</div>
+    </div>
+    
+    <!-- Sequencer Card -->
+    <div class="card-container main">
+      <div class="card" id="sequencerCard" draggable="true">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">🎵 Sequenciador</h2>
+            <p class="card-subtitle">16 Steps • 8 Trilhas</p>
+          </div>
+          <div class="card-controls">
+            <div class="card-btn collapse-btn" title="Recolher/Expandir" data-card="sequencerCard">−</div>
+            <div class="card-btn" title="Arrastar para reorganizar">⋮⋮</div>
+          </div>
+        </div>
+        <div class="card-content">
         
         <div class="seq-controls">
           <button id="seqPlay" class="seq-btn">▶ PLAY</button>
@@ -613,6 +778,10 @@
         </div>
       </div>
     </div>
+    
+    <!-- UI Helper Elements -->
+    <div class="drop-hint" id="dropHint">📍 Solte aqui para reorganizar</div>
+    <div class="layout-indicator" id="layoutIndicator">Layout salvo automaticamente! ✨</div>
   </div>
 
 <script>
@@ -1333,14 +1502,203 @@ function loadSequence() {
 // Initialize sequencer on load
 initSequencer();
 
+// --- Drag and Drop Functionality ---
+let draggedCard = null;
+let dragOffset = { x: 0, y: 0 };
+
+// Make cards draggable
+document.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('dragstart', (e) => {
+    draggedCard = card;
+    card.classList.add('dragging');
+    
+    // Show drop hint
+    document.getElementById('dropHint').classList.add('show');
+    
+    // Set drag data
+    e.dataTransfer.setData('text/plain', card.id);
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  
+  card.addEventListener('dragend', (e) => {
+    card.classList.remove('dragging');
+    document.getElementById('dropHint').classList.remove('show');
+    draggedCard = null;
+  });
+});
+
+// Handle drop zones
+document.getElementById('appContainer').addEventListener('dragover', (e) => {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+});
+
+document.getElementById('appContainer').addEventListener('drop', (e) => {
+  e.preventDefault();
+  
+  if (!draggedCard) return;
+  
+  // Find the closest card container or app container
+  const dropTarget = e.target.closest('.card-container') || document.getElementById('appContainer');
+  
+  if (dropTarget && dropTarget !== draggedCard.parentElement) {
+    // Move the card
+    if (dropTarget.id === 'appContainer') {
+      // Drop directly in app container
+      dropTarget.appendChild(draggedCard.parentElement);
+    } else {
+      // Insert before the target container
+      dropTarget.parentElement.insertBefore(draggedCard.parentElement, dropTarget);
+    }
+    
+    // Show success indicator
+    showLayoutIndicator();
+    
+    // Save layout
+    saveLayout();
+  }
+});
+
+// --- Card Collapse/Expand Functionality ---
+document.querySelectorAll('.collapse-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const cardId = btn.dataset.card;
+    const card = document.getElementById(cardId);
+    const cardContent = card.querySelector('.card-content');
+    
+    if (card.classList.contains('collapsed')) {
+      // Expand
+      card.classList.remove('collapsed');
+      btn.textContent = '−';
+      btn.classList.remove('collapsed');
+      btn.title = 'Recolher';
+    } else {
+      // Collapse
+      card.classList.add('collapsed');
+      btn.textContent = '+';
+      btn.classList.add('collapsed');
+      btn.title = 'Expandir';
+    }
+    
+    // Save layout state
+    saveLayout();
+  });
+});
+
+// --- Layout Management ---
+function saveLayout() {
+  const layout = {
+    cards: [],
+    collapsed: []
+  };
+  
+  // Save card order
+  document.querySelectorAll('.card-container').forEach((container, index) => {
+    const card = container.querySelector('.card');
+    if (card) {
+      layout.cards.push({
+        id: card.id,
+        index: index,
+        container: container.className
+      });
+      
+      // Save collapsed state
+      if (card.classList.contains('collapsed')) {
+        layout.collapsed.push(card.id);
+      }
+    }
+  });
+  
+  localStorage.setItem('synthbat_layout', JSON.stringify(layout));
+}
+
+function loadLayout() {
+  const saved = localStorage.getItem('synthbat_layout');
+  if (!saved) return;
+  
+  try {
+    const layout = JSON.parse(saved);
+    
+    // Restore collapsed states
+    layout.collapsed.forEach(cardId => {
+      const card = document.getElementById(cardId);
+      const btn = document.querySelector(`[data-card="${cardId}"]`);
+      if (card && btn) {
+        card.classList.add('collapsed');
+        btn.textContent = '+';
+        btn.classList.add('collapsed');
+        btn.title = 'Expandir';
+      }
+    });
+    
+    // Note: Card reordering would require more complex DOM manipulation
+    // For now, we just restore collapse states
+    console.log('🔧 Layout carregado do localStorage');
+  } catch (error) {
+    console.error('Erro ao carregar layout:', error);
+  }
+}
+
+function showLayoutIndicator() {
+  const indicator = document.getElementById('layoutIndicator');
+  indicator.classList.add('show');
+  setTimeout(() => {
+    indicator.classList.remove('show');
+  }, 2000);
+}
+
+// --- Touch Support for Mobile ---
+let touchStartX = 0;
+let touchStartY = 0;
+let currentTouchCard = null;
+
+document.addEventListener('touchstart', (e) => {
+  const card = e.target.closest('.card');
+  if (card && e.target.closest('.card-header')) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    currentTouchCard = card;
+  }
+});
+
+document.addEventListener('touchmove', (e) => {
+  if (currentTouchCard) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - touchStartX;
+    const deltaY = touch.clientY - touchStartY;
+    
+    // Visual feedback for touch drag
+    if (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10) {
+      currentTouchCard.style.transform = `translate(${deltaX * 0.3}px, ${deltaY * 0.3}px) rotate(${deltaX * 0.1}deg)`;
+      currentTouchCard.style.opacity = '0.8';
+    }
+  }
+});
+
+document.addEventListener('touchend', (e) => {
+  if (currentTouchCard) {
+    currentTouchCard.style.transform = '';
+    currentTouchCard.style.opacity = '';
+    currentTouchCard = null;
+  }
+});
+
+// Load saved layout on startup
+loadLayout();
+
 // Final note: friendly help
-console.log('🎵 Pad Musical Completo com Sequenciador carregado! 🎵');
+console.log('🎵 Pad Musical Completo com Layout Customizável carregado! 🎵');
 console.log('- 18 instrumentos musicais coloridos');
 console.log('- Sequenciador de 16 steps com 8 trilhas');
 console.log('- Gravação de áudio em tempo real');
 console.log('- Salvamento/carregamento de sequências');
 console.log('- Área XY para controle em tempo real');
-console.log('Divirta-se criando música! 🎶🎛️');
+console.log('- Interface drag-and-drop personalizável');
+console.log('- Cards recolhíveis para organizar o espaço');
+console.log('- Layout salvo automaticamente no navegador');
+console.log('Divirta-se criando música! 🎶🎛️📱');
 </script>
 </body>
 </html>
