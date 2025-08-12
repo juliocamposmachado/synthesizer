@@ -24,7 +24,9 @@ Uma aplicação web interativa que combina sintetizador e sequenciador de bateri
 - **Design Futurista**: Interface escura com gradientes e efeitos glass morphism
 - **Layout Flexível**: Alterna entre layout de coluna única e múltiplas colunas
 - **Drag & Drop**: Cards redimensionáveis e arrastáveis
+- **Expansão Inteligente**: Cards expandem centralizadamente sem sobreposição
 - **Sistema de Patches**: Salve e carregue seus ritmos favoritos
+- **Animações Fluidas**: Transições suaves e feedback visual responsivo
 
 ## 🚀 Como Usar
 
@@ -84,11 +86,20 @@ O sistema inclui patches pré-programados:
 - **Modo Coluna**: Layout vertical para telas menores
 - **Modo Multi-Coluna**: Layout horizontal para telas maiores
 - **Cards Redimensionáveis**: Ajuste manual do tamanho dos componentes
+- **Expansão Centralizada**: Cards se expandem equilibradamente
+- **Sistema Anti-Sobreposição**: Prevenção automática de overlaps
 
 ### Tema Visual
 - **Paleta de Cores**: Tons de azul com acentos coloridos
 - **Gradientes**: Efeitos de profundidade e modernidade
 - **Animações**: Transições suaves e feedback visual
+- **Glass Morphism**: Efeitos de transparência e blur
+- **Favicon Personalizado**: Ícone SVG otimizado para o tema
+
+### Compartilhamento Social
+- **Open Graph**: Imagens otimizadas para redes sociais (1200x630)
+- **Meta Tags**: SEO completo com descrições e palavras-chave
+- **Favicon**: Ícone SVG responsivo com tema musical
 
 ## 🔧 Personalização
 
@@ -103,6 +114,13 @@ O sistema inclui patches pré-programados:
 - Customize o BPM padrão e limites
 
 ## 📈 Atualizações Recentes
+
+### v2.1 - Expansão Centralizada e UX Aprimorada
+- ✅ **Expansão centralizada de cards**: Cards expandem para ambos os lados evitando espaços vazios
+- ✅ **Sistema anti-sobreposição**: Detecção e ajuste automático de posições
+- ✅ **Animações melhoradas**: Transições suaves com cubic-bezier para movimento natural
+- ✅ **Favicon e Open Graph**: Imagens otimizadas para compartilhamento em redes sociais
+- ✅ **SEO completo**: Meta tags e estrutura otimizada para buscadores
 
 ### v2.0 - Layout e Sequenciador Expandido
 - ✅ Implementado botão de toggle de layout
@@ -129,7 +147,11 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para de
 
 ## 🎵 Créditos
 
-Desenvolvido por [Julio Campos Machado](https://github.com/juliocamposmachado)
+Desenvolvido por **Julio Campos Machado**
+- 📧 GitHub: [juliocamposmachado](https://github.com/juliocamposmachado)
+- 📱 WhatsApp: [+55 11 99294-6628](https://wa.me/5511992946628)
+- 🌐 Empresa: [Like Look Solutions](https://likelook.wixsite.com/solutions)
+- 🚀 Deploy: [synthesizer-two.vercel.app](https://synthesizer-two.vercel.app)
 
 ---
 

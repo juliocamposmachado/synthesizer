@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#071029"/>
+      <stop offset="50%" style="stop-color:#0b1220"/>
+      <stop offset="100%" style="stop-color:#071b2f"/>
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1fb6ff"/>
+      <stop offset="100%" style="stop-color:#74b9ff"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Grid pattern -->
+  <defs>
+    <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Main Title -->
+  <text x="600" y="200" font-family="Arial, sans-serif" font-size="72" font-weight="bold" 
+        fill="url(#accentGradient)" text-anchor="middle" filter="url(#glow)">
+    🎛️ SYNTHESIZER
+  </text>
+
+  <!-- Subtitle -->
+  <text x="600" y="260" font-family="Arial, sans-serif" font-size="36" 
+        fill="#e6eef8" text-anchor="middle" opacity="0.9">
+    Sintetizador + Bateria Virtual
+  </text>
+
+  <!-- Features -->
+  <g transform="translate(150, 320)">
+    <circle cx="0" cy="0" r="8" fill="#1fb6ff"/>
+    <text x="25" y="8" font-family="Arial, sans-serif" font-size="24" fill="#e6eef8">
+      16 Pads de Bateria + Sintetizador Completo
+    </text>
+  </g>
+
+  <g transform="translate(150, 370)">
+    <circle cx="0" cy="0" r="8" fill="#2ed573"/>
+    <text x="25" y="8" font-family="Arial, sans-serif" font-size="24" fill="#e6eef8">
+      Sequenciador 32 Steps + Sistema de Patches
+    </text>
+  </g>
+
+  <g transform="translate(150, 420)">
+    <circle cx="0" cy="0" r="8" fill="#ffa502"/>
+    <text x="25" y="8" font-family="Arial, sans-serif" font-size="24" fill="#e6eef8">
+      Interface Drag & Drop + Layout Responsivo
+    </text>
+  </g>
+
+  <!-- Developer info -->
+  <text x="600" y="520" font-family="Arial, sans-serif" font-size="20" 
+        fill="#98a0b3" text-anchor="middle">
+    Desenvolvido por Julio Campos Machado
+  </text>
+
+  <text x="600" y="550" font-family="Arial, sans-serif" font-size="18" 
+        fill="#1fb6ff" text-anchor="middle">
+    Like Look Solutions | WhatsApp: +55 11 99294-6628
+  </text>
+
+  <!-- Sound waves decoration -->
+  <g opacity="0.3">
+    <path d="M50 100 Q200 50 350 100 T650 100" stroke="#1fb6ff" stroke-width="3" fill="none"/>
+    <path d="M750 100 Q900 50 1050 100 T1150 100" stroke="#1fb6ff" stroke-width="3" fill="none"/>
+    <path d="M50 530 Q200 480 350 530 T650 530" stroke="#1fb6ff" stroke-width="3" fill="none"/>
+    <path d="M750 530 Q900 480 1050 530 T1150 530" stroke="#1fb6ff" stroke-width="3" fill="none"/>
+  </g>
+</svg>

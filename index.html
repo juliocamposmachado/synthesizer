@@ -3,7 +3,80 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sintetizador + Bateria Virtual — Demo</title>
+  
+  <!-- Primary Meta Tags -->
+  <title>🎛️ Synthesizer - Sintetizador e Bateria Virtual | Like Look Solutions</title>
+  <meta name="title" content="🎛️ Synthesizer - Sintetizador e Bateria Virtual | Like Look Solutions" />
+  <meta name="description" content="Aplicação web interativa que combina sintetizador e sequenciador de bateria com 32 steps, 16 pads musicais, patches de ritmo e interface drag & drop moderna." />
+  <meta name="keywords" content="sintetizador, bateria virtual, sequenciador, música, web audio api, drum pads, synthesizer, beats, ritmos, música eletrônica" />
+  <meta name="author" content="Julio Campos Machado - Like Look Solutions" />
+  <meta name="robots" content="index, follow" />
+  <meta name="language" content="Portuguese" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://synthesizer-two.vercel.app/" />
+  <meta property="og:title" content="🎛️ Synthesizer - Sintetizador e Bateria Virtual" />
+  <meta property="og:description" content="Crie música com 16 pads de bateria, sintetizador completo, sequenciador de 32 steps e patches de ritmo. Interface moderna com drag & drop e animações fluidas." />
+  <meta property="og:image" content="https://synthesizer-two.vercel.app/og-image.svg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="Synthesizer - Like Look Solutions" />
+  <meta property="og:locale" content="pt_BR" />
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://synthesizer-two.vercel.app/" />
+  <meta property="twitter:title" content="🎛️ Synthesizer - Sintetizador e Bateria Virtual" />
+  <meta property="twitter:description" content="Crie música com 16 pads de bateria, sintetizador completo, sequenciador de 32 steps e patches de ritmo. Interface moderna com drag & drop." />
+  <meta property="twitter:image" content="https://synthesizer-two.vercel.app/og-image.svg" />
+  <meta name="twitter:creator" content="@juliocamposmachado" />
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.svg" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="favicon.svg" />
+  
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#1fb6ff" />
+  <meta name="msapplication-TileColor" content="#071029" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Synthesizer" />
+  
+  <!-- Additional Meta Tags -->
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="canonical" href="https://synthesizer-two.vercel.app/" />
+  
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Synthesizer - Sintetizador e Bateria Virtual",
+    "description": "Aplicação web interativa para criação musical com sintetizador, bateria virtual e sequenciador avançado",
+    "url": "https://synthesizer-two.vercel.app/",
+    "author": {
+      "@type": "Person",
+      "name": "Julio Campos Machado",
+      "url": "https://github.com/juliocamposmachado"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Like Look Solutions",
+      "url": "https://likelook.wixsite.com/solutions"
+    },
+    "applicationCategory": "Music",
+    "operatingSystem": "Web Browser",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
   <style>
     :root{--bg:#0b1220;--card:#0f1724;--accent:#1fb6ff;--muted:#98a0b3;--success:#2ed573;--danger:#ff4757;--warning:#ffa502}
     
@@ -82,10 +155,28 @@
     
     .card.collapsed .card-content{
       display:none;
+      opacity:0;
+      transform:scaleY(0);
     }
     
     .card.collapsed{
       padding:12px 20px;
+      width:auto;
+      min-width:280px;
+      max-width:450px;
+      transform-origin:center center;
+      transition:all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    .card-content{
+      opacity:1;
+      transform:scaleY(1);
+      transform-origin:center top;
+      transition:all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    .card:not(.collapsed){
+      transform-origin:center center;
     }
     
     /* Resize indicator */
@@ -1776,15 +1867,36 @@ document.querySelectorAll('.collapse-btn').forEach(btn => {
     const cardId = btn.dataset.card;
     const card = document.getElementById(cardId);
     const cardContent = card.querySelector('.card-content');
+    const cardContainer = card.closest('.card-container');
+    
+    // Store original position for smooth centering
+    const originalRect = card.getBoundingClientRect();
+    const containerRect = cardContainer.getBoundingClientRect();
     
     if (card.classList.contains('collapsed')) {
-      // Expand
-      card.classList.remove('collapsed');
-      btn.textContent = '−';
-      btn.classList.remove('collapsed');
-      btn.title = 'Recolher';
+      // Expand with centered animation
+      const currentCenter = originalRect.left + originalRect.width / 2;
+      
+      // Calculate expansion offset to keep centered
+      card.style.transformOrigin = 'center center';
+      
+      // Smooth expand animation
+      requestAnimationFrame(() => {
+        card.classList.remove('collapsed');
+        btn.textContent = '−';
+        btn.classList.remove('collapsed');
+        btn.title = 'Recolher';
+        
+        // After expansion, adjust position if needed to prevent overlap
+        setTimeout(() => {
+          adjustCardPositionToPreventOverlap(card, cardContainer);
+        }, 100);
+      });
     } else {
-      // Collapse
+      // Collapse with centered animation
+      card.style.transformOrigin = 'center center';
+      
+      // Smooth collapse animation
       card.classList.add('collapsed');
       btn.textContent = '+';
       btn.classList.add('collapsed');
@@ -1795,6 +1907,55 @@ document.querySelectorAll('.collapse-btn').forEach(btn => {
     saveLayout();
   });
 });
+
+// Function to adjust card position to prevent overlap
+function adjustCardPositionToPreventOverlap(card, container) {
+  const app = document.getElementById('appContainer');
+  const isMultiColumn = app.classList.contains('multi-column');
+  
+  if (!isMultiColumn) return; // No adjustment needed in single column
+  
+  const cardRect = card.getBoundingClientRect();
+  const appRect = app.getBoundingClientRect();
+  
+  // Check for overlaps with other cards
+  const allCards = document.querySelectorAll('.card:not(.collapsed)');
+  let hasOverlap = false;
+  
+  allCards.forEach(otherCard => {
+    if (otherCard === card) return;
+    
+    const otherRect = otherCard.getBoundingClientRect();
+    
+    // Check if cards overlap
+    if (!(cardRect.right < otherRect.left || 
+          cardRect.left > otherRect.right || 
+          cardRect.bottom < otherRect.top || 
+          cardRect.top > otherRect.bottom)) {
+      hasOverlap = true;
+    }
+  });
+  
+  // If overlap detected, adjust position
+  if (hasOverlap) {
+    const viewportWidth = window.innerWidth;
+    const cardWidth = cardRect.width;
+    
+    // Try to center the card in available space
+    const availableSpace = viewportWidth - cardWidth - 40; // 40px margin
+    const optimalLeft = Math.max(20, availableSpace / 2);
+    
+    // Apply smooth repositioning
+    container.style.transition = 'transform 0.3s ease';
+    container.style.transform = `translateX(${optimalLeft - cardRect.left + appRect.left}px)`;
+    
+    // Reset transform after animation
+    setTimeout(() => {
+      container.style.transform = '';
+      container.style.transition = '';
+    }, 300);
+  }
+}
 
 // --- Layout Management ---
 function saveLayout() {
