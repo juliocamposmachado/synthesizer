@@ -5,15 +5,117 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Sintetizador + Bateria Virtual — Demo</title>
   <style>
-    :root{--bg:#0b1220;--card:#0f1724;--accent:#1fb6ff;--muted:#98a0b3}
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;color:#e6eef8;background:linear-gradient(180deg,#071029 0%, #071b2f 100%)}
-    .app{max-width:1400px;margin:28px auto;padding:18px;display:grid;grid-template-columns:450px 1fr;gap:18px}
-    .card{background:rgba(255,255,255,0.03);border-radius:12px;padding:14px;box-shadow:0 6px 20px rgba(2,6,23,0.6)}
-    h1{margin:6px 0 12px;font-size:18px}
-    .pads{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
-    .pad{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.04);padding:10px;border-radius:8px;cursor:pointer;user-select:none;text-align:center;font-size:12px;font-weight:500;transition:all 0.1s ease}
-    .pad:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.3)}
-    .pad:active{transform:translateY(2px)}
+    :root{--bg:#0b1220;--card:#0f1724;--accent:#1fb6ff;--muted:#98a0b3;--success:#2ed573;--danger:#ff4757;--warning:#ffa502}
+    
+    * { box-sizing: border-box; }
+    
+    html,body{height:100%;margin:0;font-family:'Inter',system-ui,-apple-system,Arial,sans-serif;color:#e6eef8;background:linear-gradient(180deg,#071029 0%, #071b2f 100%);line-height:1.5}
+    
+    .app{max-width:1800px;margin:20px auto;padding:20px;display:grid;grid-template-columns:1fr;gap:20px}
+    
+    @media (min-width: 1024px) {
+      .app { grid-template-columns: 500px 1fr; }
+    }
+    
+    @media (min-width: 1400px) {
+      .app { grid-template-columns: 600px 1fr; }
+    }
+    
+    .card{
+      background:rgba(255,255,255,0.05);
+      border-radius:16px;
+      padding:20px;
+      box-shadow:0 8px 32px rgba(2,6,23,0.4);
+      border:1px solid rgba(255,255,255,0.08);
+      backdrop-filter:blur(10px);
+    }
+    
+    .card-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:20px;
+      padding-bottom:12px;
+      border-bottom:1px solid rgba(255,255,255,0.1);
+    }
+    
+    .card-title{
+      font-size:20px;
+      font-weight:700;
+      color:#fff;
+      margin:0;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    
+    .card-subtitle{
+      font-size:14px;
+      color:var(--muted);
+      margin:8px 0 0 0;
+    }
+    
+    .section{
+      margin-bottom:24px;
+    }
+    
+    .section:last-child{
+      margin-bottom:0;
+    }
+    
+    .section-title{
+      font-size:16px;
+      font-weight:600;
+      margin-bottom:12px;
+      color:var(--accent);
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    
+    .pads-table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:8px;
+    }
+    
+    .pads-table td{
+      padding:0;
+      vertical-align:top;
+    }
+    
+    .pad{
+      width:100%;
+      background:linear-gradient(135deg,rgba(255,255,255,0.1),rgba(255,255,255,0.05));
+      border:1px solid rgba(255,255,255,0.15);
+      padding:12px 8px;
+      border-radius:12px;
+      cursor:pointer;
+      user-select:none;
+      text-align:center;
+      font-size:11px;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      transition:all 0.2s ease;
+      min-height:48px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    
+    .pad:hover{
+      transform:translateY(-2px);
+      box-shadow:0 6px 20px rgba(0,0,0,0.3);
+      border-color:rgba(255,255,255,0.3);
+    }
+    
+    .pad:active{
+      transform:translateY(1px);
+      transition:transform 0.05s ease;
+    }
     
     /* Drum pad colors */
     .pad-kick{background:linear-gradient(135deg,#ff4757,#ff3838);color:white;border:1px solid #ff3838}
@@ -39,100 +141,475 @@
     .pad-noise{background:linear-gradient(135deg,#636e72,#2d3436);color:white;border:1px solid #2d3436}
     .pad-sweep{background:linear-gradient(135deg,#00b894,#00cec9);color:white;border:1px solid #00cec9}
     
-    .center{display:flex;flex-direction:column;gap:12px}
-    .pad-section{margin-bottom:20px}
-    .section-title{font-size:14px;font-weight:600;margin-bottom:8px;color:#1fb6ff;text-transform:uppercase;letter-spacing:0.5px}
-    #xyCanvas{width:100%;height:420px;background:linear-gradient(180deg,#071b2f,#04202a);border-radius:10px;touch-action:none}
-    .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-    label{font-size:12px;color:var(--muted)}
-    input[type=range]{-webkit-appearance:none;height:6px;background:rgba(255,255,255,0.05);border-radius:6px}
-    .row{display:flex;gap:8px;align-items:center}
-    button{background:var(--accent);border:none;color:#022233;padding:8px 12px;border-radius:8px;cursor:pointer}
-    .muted-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
-    .meta{font-size:12px;color:var(--muted)}
-    .preset-list{display:flex;gap:8px;flex-wrap:wrap}
-    .preset{background:rgba(255,255,255,0.02);padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.03);cursor:pointer}
+    /* Controls and buttons */
+    .controls-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:16px;
+    }
+    
+    @media (min-width: 768px) {
+      .controls-grid { grid-template-columns: 1fr 1fr; }
+    }
+    
+    .control-group{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    
+    .control-row{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    
+    .control-label{
+      font-size:12px;
+      color:var(--muted);
+      min-width:80px;
+      font-weight:500;
+    }
+    
+    .btn-group{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    
+    .btn{
+      background:var(--accent);
+      border:none;
+      color:#022233;
+      padding:10px 16px;
+      border-radius:8px;
+      cursor:pointer;
+      font-size:13px;
+      font-weight:600;
+      transition:all 0.2s ease;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+    }
+    
+    .btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 4px 12px rgba(31,182,255,0.3);
+    }
+    
+    .btn.danger{background:var(--danger)}
+    .btn.success{background:var(--success)}
+    .btn.muted{background:transparent;border:2px solid rgba(255,255,255,0.15);color:var(--muted)}
+    
+    /* Sequencer styles */
+    .sequencer-container{
+      background:rgba(0,0,0,0.3);
+      border-radius:12px;
+      padding:16px;
+      overflow-x:auto;
+      position:relative;
+    }
+    
+    .sequencer-grid{
+      position:relative;
+      width:100%;
+    }
+    
+    .sequencer-table{
+      width:100%;
+      min-width:900px;
+      border-collapse:separate;
+      border-spacing:2px;
+      background:rgba(0,0,0,0.2);
+      border-radius:8px;
+    }
+    
+    .sequencer-table th{
+      background:linear-gradient(135deg, rgba(31,182,255,0.15), rgba(31,182,255,0.08));
+      color:var(--accent);
+      padding:10px 6px;
+      text-align:center;
+      font-size:11px;
+      border-radius:6px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      border:1px solid rgba(31,182,255,0.2);
+    }
+    
+    .sequencer-table th:first-child{
+      background:linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+      color:#fff;
+      font-size:12px;
+      min-width:100px;
+      max-width:100px;
+    }
+    
+    .sequencer-table tbody tr{
+      background:rgba(255,255,255,0.02);
+    }
+    
+    .sequencer-table tbody tr:nth-child(odd){
+      background:rgba(255,255,255,0.04);
+    }
+    
+    .track-name-cell{
+      background:linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04)) !important;
+      color:#fff;
+      padding:12px 16px;
+      font-size:11px;
+      border-radius:6px;
+      font-weight:700;
+      text-align:center;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      border:1px solid rgba(255,255,255,0.1);
+      min-width:100px;
+      max-width:100px;
+    }
+    
+    .step-cell{
+      background:linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      border:2px solid rgba(255,255,255,0.1);
+      width:32px;
+      height:32px;
+      cursor:pointer;
+      border-radius:8px;
+      position:relative;
+      transition:all 0.2s ease;
+      text-align:center;
+      vertical-align:middle;
+    }
+    
+    .step-cell:hover{
+      border-color:var(--accent);
+      background:rgba(31,182,255,0.1);
+    }
+    
+    .step-cell.active{
+      background:var(--accent);
+      border-color:var(--accent);
+      box-shadow:0 0 10px rgba(31,182,255,0.5);
+    }
+    
+    .step-cell.current{
+      border-color:#fff;
+      box-shadow:0 0 15px rgba(255,255,255,0.8);
+      animation:currentStep 0.6s ease-in-out;
+    }
+    
+    @keyframes currentStep{
+      0%,100%{transform:scale(1)}
+      50%{transform:scale(1.1)}
+    }
+    
+    .playhead{
+      position:absolute;
+      top:20px;
+      bottom:20px;
+      width:3px;
+      background:linear-gradient(180deg, #fff, var(--accent));
+      border-radius:2px;
+      transition:left 0.15s ease;
+      z-index:10;
+      box-shadow:0 0 15px rgba(255,255,255,0.8),
+                  0 0 30px rgba(31,182,255,0.4);
+      pointer-events:none;
+    }
+    
+    .seq-controls{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+    
+    .seq-btn{
+      background:var(--accent);
+      border:none;
+      color:#022233;
+      padding:8px 14px;
+      border-radius:8px;
+      cursor:pointer;
+      font-size:12px;
+      font-weight:600;
+      transition:all 0.2s ease;
+      text-transform:uppercase;
+    }
+    
+    .seq-btn.danger{background:var(--danger)}
+    .seq-btn.success{background:var(--success)}
+    .seq-btn.recording{
+      background:var(--danger);
+      animation:pulse 1.2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse{
+      0%,100%{opacity:1;transform:scale(1)}
+      50%{opacity:0.8;transform:scale(1.05)}
+    }
+    
+    .bpm-control{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-left:16px;
+    }
+    
+    .bpm-display{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:600;
+    }
+    /* XY Canvas */
+    #xyCanvas{
+      width:100%;
+      height:400px;
+      background:linear-gradient(135deg,#071b2f,#04202a,#051a28);
+      border-radius:16px;
+      touch-action:none;
+      border:2px solid rgba(255,255,255,0.1);
+      box-shadow:inset 0 4px 20px rgba(0,0,0,0.3);
+    }
+    
+    @media (min-width: 768px) {
+      #xyCanvas { height: 450px; }
+    }
+    
+    /* Form elements */
+    input[type=range]{
+      -webkit-appearance:none;
+      height:8px;
+      background:rgba(255,255,255,0.1);
+      border-radius:4px;
+      outline:none;
+      flex:1;
+      min-width:100px;
+    }
+    
+    input[type=range]::-webkit-slider-thumb{
+      -webkit-appearance:none;
+      width:20px;
+      height:20px;
+      background:var(--accent);
+      border-radius:50%;
+      cursor:pointer;
+      box-shadow:0 2px 8px rgba(31,182,255,0.4);
+    }
+    
+    select{
+      background:rgba(255,255,255,0.1);
+      border:2px solid rgba(255,255,255,0.15);
+      color:#fff;
+      padding:8px 12px;
+      border-radius:8px;
+      font-size:13px;
+    }
+    
+    .xy-info{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:16px;
+      margin-top:16px;
+    }
+    
+    .meta{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.4;
+    }
+    
+    .preset-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(120px, 1fr));
+      gap:8px;
+    }
+    
+    .preset{
+      background:rgba(255,255,255,0.05);
+      padding:10px 12px;
+      border-radius:8px;
+      border:2px solid rgba(255,255,255,0.1);
+      cursor:pointer;
+      text-align:center;
+      font-size:12px;
+      font-weight:500;
+      transition:all 0.2s ease;
+    }
+    
+    .preset:hover{
+      border-color:var(--accent);
+      background:rgba(31,182,255,0.1);
+      transform:translateY(-1px);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .app { padding: 12px; margin: 10px auto; }
+      .card { padding: 16px; }
+      .card-title { font-size: 18px; }
+      .section-title { font-size: 14px; }
+      .timeline-container { padding: 12px; }
+      .seq-controls { gap: 6px; }
+      .seq-btn { padding: 6px 10px; font-size: 11px; }
+      #xyCanvas { height: 300px; }
+    }
   </style>
 </head>
 <body>
   <div class="app">
+    <!-- Left Panel: Controls -->
     <div class="card">
-      <h1>Sintetizador + Bateria Virtual</h1>
-      <div class="meta">Toque os pads ou use a área central (XY) para manipular tom e timbre. Suporte para toque e mouse.</div>
-      <hr style="margin:12px 0;border-color:rgba(255,255,255,0.03)" />
+      <div class="card-header">
+        <div>
+          <h1 class="card-title">🎵 SynthBat Studio</h1>
+          <p class="card-subtitle">Sintetizador e Sequenciador Musical</p>
+        </div>
+      </div>
 
-      <div class="pad-section">
+      <!-- Drum Pads Section -->
+      <div class="section">
         <div class="section-title">🥁 Bateria</div>
-        <div class="pads">
-          <div class="pad pad-kick" data-pad="kick">KICK</div>
-          <div class="pad pad-snare" data-pad="snare">SNARE</div>
-          <div class="pad pad-hat" data-pad="hat">HI-HAT</div>
-          <div class="pad pad-openhat" data-pad="openhat">OPEN HAT</div>
-          <div class="pad pad-crash" data-pad="crash">CRASH</div>
-          <div class="pad pad-ride" data-pad="ride">RIDE</div>
-          <div class="pad pad-tom" data-pad="tom">TOM</div>
-          <div class="pad pad-clap" data-pad="clap">CLAP</div>
-          <div class="pad pad-perc" data-pad="perc">PERC</div>
-        </div>
+        <table class="pads-table">
+          <tr>
+            <td><div class="pad pad-kick" data-pad="kick">KICK</div></td>
+            <td><div class="pad pad-snare" data-pad="snare">SNARE</div></td>
+            <td><div class="pad pad-hat" data-pad="hat">HI-HAT</div></td>
+          </tr>
+          <tr>
+            <td><div class="pad pad-openhat" data-pad="openhat">OPEN HAT</div></td>
+            <td><div class="pad pad-crash" data-pad="crash">CRASH</div></td>
+            <td><div class="pad pad-ride" data-pad="ride">RIDE</div></td>
+          </tr>
+          <tr>
+            <td><div class="pad pad-tom" data-pad="tom">TOM</div></td>
+            <td><div class="pad pad-clap" data-pad="clap">CLAP</div></td>
+            <td><div class="pad pad-perc" data-pad="perc">PERC</div></td>
+          </tr>
+        </table>
       </div>
       
-      <div class="pad-section">
+      <!-- Instruments Section -->
+      <div class="section">
         <div class="section-title">🎹 Instrumentos</div>
-        <div class="pads">
-          <div class="pad pad-piano" data-pad="piano">PIANO</div>
-          <div class="pad pad-bass" data-pad="bass">BASS</div>
-          <div class="pad pad-lead" data-pad="lead">LEAD</div>
-          <div class="pad pad-pad" data-pad="synthpad">PAD</div>
-          <div class="pad pad-pluck" data-pad="pluck">PLUCK</div>
-          <div class="pad pad-organ" data-pad="organ">ORGAN</div>
-        </div>
+        <table class="pads-table">
+          <tr>
+            <td><div class="pad pad-piano" data-pad="piano">PIANO</div></td>
+            <td><div class="pad pad-bass" data-pad="bass">BASS</div></td>
+            <td><div class="pad pad-lead" data-pad="lead">LEAD</div></td>
+          </tr>
+          <tr>
+            <td><div class="pad pad-pad" data-pad="synthpad">PAD</div></td>
+            <td><div class="pad pad-pluck" data-pad="pluck">PLUCK</div></td>
+            <td><div class="pad pad-organ" data-pad="organ">ORGAN</div></td>
+          </tr>
+        </table>
       </div>
       
-      <div class="pad-section">
+      <!-- Effects Section -->
+      <div class="section">
         <div class="section-title">🎛️ Efeitos</div>
-        <div class="pads">
-          <div class="pad pad-fx" data-pad="reverse">REVERSE</div>
-          <div class="pad pad-sweep" data-pad="sweep">SWEEP</div>
-          <div class="pad pad-noise" data-pad="whitenoise">NOISE</div>
+        <table class="pads-table">
+          <tr>
+            <td><div class="pad pad-fx" data-pad="reverse">REVERSE</div></td>
+            <td><div class="pad pad-sweep" data-pad="sweep">SWEEP</div></td>
+            <td><div class="pad pad-noise" data-pad="whitenoise">NOISE</div></td>
+          </tr>
+        </table>
+      </div>
+      
+      <!-- Controls Section -->
+      <div class="section">
+        <div class="section-title">⚙️ Controles Globais</div>
+        <div class="controls-grid">
+          <div class="control-group">
+            <div class="control-row">
+              <span class="control-label">BPM</span>
+              <input id="bpm" type="range" min="40" max="200" value="100" />
+            </div>
+            <div class="control-row">
+              <span class="control-label">Volume</span>
+              <input id="masterVol" type="range" min="0" max="1" step="0.01" value="0.9" />
+            </div>
+            <div class="control-row">
+              <span class="control-label">Pitch</span>
+              <input id="pitchRange" type="range" min="0.2" max="3" step="0.01" value="1.5" />
+            </div>
+          </div>
+          <div class="control-group">
+            <div class="btn-group">
+              <button id="startStop" class="btn">Start</button>
+              <button id="metroToggle" class="btn muted">Metrônomo</button>
+              <button id="savePreset" class="btn muted">Salvar Preset</button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <hr style="margin:12px 0;border-color:rgba(255,255,255,0.03)" />
-
-      <div>
-        <div style="margin-bottom:8px"><strong>Controles</strong></div>
-        <div class="controls">
-          <div class="row"><label>BPM</label><input id="bpm" type="range" min="40" max="200" value="100" /></div>
-          <div class="row"><label>Volume Mestre</label><input id="masterVol" type="range" min="0" max="1" step="0.01" value="0.9" /></div>
-          <div class="row"><label>Pitch Range</label><input id="pitchRange" type="range" min="0.2" max="3" step="0.01" value="1.5" /></div>
-        </div>
-        <div style="margin-top:10px;display:flex;gap:8px">
-          <button id="startStop">Start</button>
-          <button id="metroToggle" class="muted-btn">Metrônomo</button>
-          <button id="savePreset" class="muted-btn">Salvar Preset</button>
-        </div>
-      </div>
-
-      <hr style="margin:12px 0;border-color:rgba(255,255,255,0.03)" />
-
-      <div>
-        <div style="margin-bottom:8px"><strong>Presets</strong></div>
-        <div class="preset-list" id="presets"></div>
+      <!-- Presets Section -->
+      <div class="section">
+        <div class="section-title">💾 Presets</div>
+        <div class="preset-grid" id="presets"></div>
       </div>
     </div>
 
-    <div class="card center">
-      <h1>Área Central — XY Pad (toque para controlar nota / batida)</h1>
-      <canvas id="xyCanvas"></canvas>
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div class="meta">Eixo X: variação entre dois timbres / samples • Eixo Y: pitch/volume</div>
-        <div>
-          <label>Modo</label>
-          <select id="mode">
-            <option value="sampleBlend">Misturar Samples</option>
-            <option value="oscillator">Oscilador (sintet)</option>
-            <option value="drumMorph">Morph Bateria</option>
-          </select>
+    <!-- Right Panel: XY Pad & Sequencer -->
+    <div class="card">
+      <!-- XY Pad Section -->
+      <div class="section">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">🎚️ Controle XY</h2>
+            <p class="card-subtitle">Área de controle em tempo real</p>
+          </div>
+        </div>
+        
+        <canvas id="xyCanvas"></canvas>
+        
+        <div class="xy-info">
+          <div class="meta">Eixo X: variação entre timbres • Eixo Y: pitch/volume</div>
+          <div class="control-row">
+            <span class="control-label">Modo:</span>
+            <select id="mode">
+              <option value="sampleBlend">Misturar Samples</option>
+              <option value="oscillator">Oscilador</option>
+              <option value="drumMorph">Morph Bateria</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Sequencer Section -->
+      <div class="section">
+        <div class="section-title">🎵 Sequenciador (16 Steps)</div>
+        
+        <div class="seq-controls">
+          <button id="seqPlay" class="seq-btn">▶ PLAY</button>
+          <button id="seqStop" class="seq-btn danger">⏹ STOP</button>
+          <button id="seqRecord" class="seq-btn success">⏺ GRAVAR</button>
+          <button id="seqClear" class="seq-btn">🗑 LIMPAR</button>
+          <button id="seqSave" class="seq-btn">💾 SALVAR</button>
+          <button id="seqLoad" class="seq-btn">📁 CARREGAR</button>
+          
+          <div class="bpm-control">
+            <span class="bpm-display">Tempo: <span id="seqBpm">120</span> BPM</span>
+            <input id="seqBpmSlider" type="range" min="60" max="180" value="120">
+          </div>
+        </div>
+        
+        <div class="sequencer-container">
+          <div class="sequencer-grid">
+            <table class="sequencer-table" id="sequencerTable">
+              <!-- Tabela será gerada dinamicamente -->
+            </table>
+            <div class="playhead" id="playhead"></div>
+          </div>
+        </div>
+        
+        <div class="meta" style="margin-top:12px;">
+          💡 Dica: Clique nos pads em modo GRAVAR para adicionar à trilha, ou clique diretamente nas células para programar beats
         </div>
       </div>
     </div>
@@ -154,6 +631,29 @@ const state = {
   mode:'sampleBlend'
 }
 
+// Sequencer state
+const sequencer = {
+  bpm: 120,
+  playing: false,
+  recording: false,
+  currentStep: 0,
+  steps: 16,
+  tracks: [
+    {name: 'KICK', sound: 'kick', pattern: new Array(16).fill(false)},
+    {name: 'SNARE', sound: 'snare', pattern: new Array(16).fill(false)},
+    {name: 'HAT', sound: 'hat', pattern: new Array(16).fill(false)},
+    {name: 'OPEN HAT', sound: 'openhat', pattern: new Array(16).fill(false)},
+    {name: 'CRASH', sound: 'crash', pattern: new Array(16).fill(false)},
+    {name: 'PIANO', sound: 'piano', pattern: new Array(16).fill(false)},
+    {name: 'BASS', sound: 'bass', pattern: new Array(16).fill(false)},
+    {name: 'LEAD', sound: 'lead', pattern: new Array(16).fill(false)}
+  ],
+  interval: null,
+  audioRecorder: null,
+  recordedChunks: [],
+  mediaRecorder: null
+}
+
 // Wire controls
 const bpmSlider = document.getElementById('bpm');
 const masterVol = document.getElementById('masterVol');
@@ -167,6 +667,28 @@ bpmSlider.addEventListener('input',()=>{state.bpm=+bpmSlider.value});
 masterVol.addEventListener('input',()=>{state.masterVol=+masterVol.value; masterGain.gain.setValueAtTime(state.masterVol, now());});
 pitchRange.addEventListener('input',()=>{state.pitchRange=+pitchRange.value});
 modeSel.addEventListener('change',()=>{state.mode=modeSel.value; drawGuide();});
+
+// Sequencer controls
+const seqBpmSlider = document.getElementById('seqBpmSlider');
+const seqBpmDisplay = document.getElementById('seqBpm');
+const seqPlayBtn = document.getElementById('seqPlay');
+const seqStopBtn = document.getElementById('seqStop');
+const seqRecordBtn = document.getElementById('seqRecord');
+const seqClearBtn = document.getElementById('seqClear');
+const seqSaveBtn = document.getElementById('seqSave');
+const seqLoadBtn = document.getElementById('seqLoad');
+
+seqBpmSlider.addEventListener('input', () => {
+  sequencer.bpm = +seqBpmSlider.value;
+  seqBpmDisplay.textContent = sequencer.bpm;
+});
+
+seqPlayBtn.addEventListener('click', () => sequencer.playing ? stopSequencer() : startSequencer());
+seqStopBtn.addEventListener('click', stopSequencer);
+seqRecordBtn.addEventListener('click', toggleRecording);
+seqClearBtn.addEventListener('click', clearSequencer);
+seqSaveBtn.addEventListener('click', saveSequence);
+seqLoadBtn.addEventListener('click', loadSequence);
 
 startStopBtn.addEventListener('click',()=>{ if(!state.playing){ startTransport(); } else { stopTransport(); } });
 metroToggle.addEventListener('click',()=>{ state.metro = !state.metro; metroToggle.style.opacity = state.metro?1:0.6; });
@@ -389,6 +911,11 @@ document.querySelectorAll('.pad').forEach(el=>{
     // Visual feedback
     el.style.transform = 'scale(0.95)';
     setTimeout(() => { el.style.transform = ''; }, 100);
+    
+    // Add to sequencer if recording
+    if(sequencer.recording) {
+      addToSequencer(p);
+    }
   });
 });
 
@@ -505,13 +1032,315 @@ renderPresets();
 // Utility: resume audio on first gesture
 window.addEventListener('pointerdown',()=>{ if(ctx.state==='suspended') ctx.resume(); });
 
+// --- Sequencer Implementation ---
+function initSequencer() {
+  const table = document.getElementById('sequencerTable');
+  table.innerHTML = '';
+  
+  // Create header
+  const thead = document.createElement('thead');
+  const headerRow = document.createElement('tr');
+  
+  // Track name header
+  const trackHeader = document.createElement('th');
+  trackHeader.textContent = 'TRACKS';
+  headerRow.appendChild(trackHeader);
+  
+  // Step number headers (1-16)
+  for(let step = 0; step < sequencer.steps; step++) {
+    const stepHeader = document.createElement('th');
+    stepHeader.textContent = String(step + 1).padStart(2, '0');
+    headerRow.appendChild(stepHeader);
+  }
+  
+  thead.appendChild(headerRow);
+  table.appendChild(thead);
+  
+  // Create body
+  const tbody = document.createElement('tbody');
+  
+  // Create track rows
+  sequencer.tracks.forEach((track, trackIndex) => {
+    const row = document.createElement('tr');
+    row.className = 'track-row';
+    
+    // Track name cell
+    const nameCell = document.createElement('td');
+    nameCell.className = 'track-name-cell';
+    nameCell.textContent = track.name;
+    row.appendChild(nameCell);
+    
+    // Step cells
+    for(let step = 0; step < sequencer.steps; step++) {
+      const stepCell = document.createElement('td');
+      stepCell.className = 'step-cell';
+      stepCell.dataset.track = trackIndex;
+      stepCell.dataset.step = step;
+      
+      if(track.pattern[step]) {
+        stepCell.classList.add('active');
+      }
+      
+      stepCell.addEventListener('click', () => {
+        track.pattern[step] = !track.pattern[step];
+        stepCell.classList.toggle('active', track.pattern[step]);
+      });
+      
+      row.appendChild(stepCell);
+    }
+    
+    tbody.appendChild(row);
+  });
+  
+  table.appendChild(tbody);
+}
+
+function startSequencer() {
+  if(sequencer.playing) return;
+  
+  sequencer.playing = true;
+  sequencer.currentStep = 0;
+  seqPlayBtn.textContent = '⏸ PAUSE';
+  
+  const stepTime = 60 / sequencer.bpm / 4; // 16th notes
+  
+  sequencer.interval = setInterval(() => {
+    playSequencerStep();
+    updatePlayhead();
+    sequencer.currentStep = (sequencer.currentStep + 1) % sequencer.steps;
+  }, stepTime * 1000);
+  
+  // Start recording if needed
+  if(sequencer.recording && !sequencer.mediaRecorder) {
+    startAudioRecording();
+  }
+}
+
+function stopSequencer() {
+  sequencer.playing = false;
+  sequencer.currentStep = 0;
+  seqPlayBtn.textContent = '▶ PLAY';
+  
+  if(sequencer.interval) {
+    clearInterval(sequencer.interval);
+    sequencer.interval = null;
+  }
+  
+  updatePlayhead();
+  
+  // Stop recording if active
+  if(sequencer.mediaRecorder && sequencer.mediaRecorder.state === 'recording') {
+    sequencer.mediaRecorder.stop();
+  }
+}
+
+function playSequencerStep() {
+  const time = now();
+  
+  sequencer.tracks.forEach(track => {
+    if(track.pattern[sequencer.currentStep]) {
+      playSound(track.sound, time);
+    }
+  });
+}
+
+function playSound(soundName, time) {
+  // Map sounds to functions
+  const soundMap = {
+    kick: () => playKick(time),
+    snare: () => playSnare(time),
+    hat: () => playHat(time),
+    openhat: () => playOpenHat(time),
+    crash: () => playCrash(time),
+    ride: () => playRide(time),
+    tom: () => playTom(time),
+    clap: () => playClap(time),
+    perc: () => playPerc(time),
+    piano: () => playPiano(time, 440),
+    bass: () => playBass(time, 110),
+    lead: () => playLead(time, 880),
+    synthpad: () => playSynthPad(time, 220),
+    pluck: () => playPluck(time, 660),
+    organ: () => playOrgan(time, 330),
+    reverse: () => playReverse(time),
+    sweep: () => playSweep(time),
+    whitenoise: () => playWhiteNoise(time)
+  };
+  
+  if(soundMap[soundName]) {
+    soundMap[soundName]();
+  }
+}
+
+function updatePlayhead() {
+  const playhead = document.getElementById('playhead');
+  const table = document.getElementById('sequencerTable');
+  
+  if(!table) return;
+  
+  const tableRect = table.getBoundingClientRect();
+  const firstRow = table.querySelector('tr');
+  const trackNameCell = firstRow?.querySelector('th');
+  const trackNameWidth = trackNameCell?.getBoundingClientRect().width || 100;
+  
+  const availableWidth = tableRect.width - trackNameWidth;
+  const stepWidth = availableWidth / sequencer.steps;
+  const playheadX = trackNameWidth + (sequencer.currentStep * stepWidth) + (stepWidth / 2);
+  
+  playhead.style.left = playheadX + 'px';
+  
+  // Update current step highlighting
+  document.querySelectorAll('.step-cell.current').forEach(cell => {
+    cell.classList.remove('current');
+  });
+  
+  if(sequencer.playing) {
+    document.querySelectorAll(`[data-step="${sequencer.currentStep}"]`).forEach(cell => {
+      if(cell.classList.contains('step-cell')) {
+        cell.classList.add('current');
+      }
+    });
+  }
+}
+
+function addToSequencer(soundName) {
+  // Find the track for this sound
+  const track = sequencer.tracks.find(t => t.sound === soundName);
+  if(track) {
+    track.pattern[sequencer.currentStep] = true;
+    initSequencer(); // Refresh UI
+  }
+}
+
+function clearSequencer() {
+  sequencer.tracks.forEach(track => {
+    track.pattern.fill(false);
+  });
+  initSequencer();
+}
+
+function toggleRecording() {
+  sequencer.recording = !sequencer.recording;
+  seqRecordBtn.classList.toggle('recording', sequencer.recording);
+  seqRecordBtn.textContent = sequencer.recording ? '⏹ PARAR GRAV' : '⏺ GRAVAR';
+  
+  if(!sequencer.recording && sequencer.mediaRecorder && sequencer.mediaRecorder.state === 'recording') {
+    sequencer.mediaRecorder.stop();
+  }
+}
+
+// Audio recording functions
+async function startAudioRecording() {
+  try {
+    // Create audio destination for recording
+    const dest = ctx.createMediaStreamDestination();
+    masterGain.connect(dest);
+    
+    sequencer.recordedChunks = [];
+    sequencer.mediaRecorder = new MediaRecorder(dest.stream);
+    
+    sequencer.mediaRecorder.ondataavailable = (event) => {
+      if(event.data.size > 0) {
+        sequencer.recordedChunks.push(event.data);
+      }
+    };
+    
+    sequencer.mediaRecorder.onstop = () => {
+      const blob = new Blob(sequencer.recordedChunks, { type: 'audio/webm' });
+      downloadRecording(blob);
+    };
+    
+    sequencer.mediaRecorder.start();
+    console.log('🎙️ Gravação iniciada!');
+  } catch (error) {
+    console.error('Erro ao iniciar gravação:', error);
+  }
+}
+
+function downloadRecording(blob) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `synthbat-recording-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.webm`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  console.log('🎵 Gravação salva!');
+}
+
+function saveSequence() {
+  const sequence = {
+    bpm: sequencer.bpm,
+    tracks: sequencer.tracks.map(track => ({
+      name: track.name,
+      sound: track.sound,
+      pattern: [...track.pattern]
+    }))
+  };
+  
+  const blob = new Blob([JSON.stringify(sequence, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `synthbat-sequence-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  console.log('💾 Sequência salva!');
+}
+
+function loadSequence() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  
+  input.onchange = (event) => {
+    const file = event.target.files[0];
+    if(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const sequence = JSON.parse(e.target.result);
+          
+          // Load BPM
+          sequencer.bpm = sequence.bpm || 120;
+          seqBpmSlider.value = sequencer.bpm;
+          seqBpmDisplay.textContent = sequencer.bpm;
+          
+          // Load patterns
+          sequence.tracks.forEach((loadedTrack, index) => {
+            if(sequencer.tracks[index]) {
+              sequencer.tracks[index].pattern = [...loadedTrack.pattern];
+            }
+          });
+          
+          initSequencer();
+          console.log('📁 Sequência carregada!');
+        } catch (error) {
+          console.error('Erro ao carregar sequência:', error);
+          alert('Erro ao carregar arquivo. Verifique se é um arquivo de sequência válido.');
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+  
+  input.click();
+}
+
+// Initialize sequencer on load
+initSequencer();
+
 // Final note: friendly help
-console.log('🎵 Pad Musical Completo carregado! 🎵');
-console.log('- 9 sons de bateria coloridos');
-console.log('- 6 instrumentos melódicos');
-console.log('- 3 efeitos sonoros');
+console.log('🎵 Pad Musical Completo com Sequenciador carregado! 🎵');
+console.log('- 18 instrumentos musicais coloridos');
+console.log('- Sequenciador de 16 steps com 8 trilhas');
+console.log('- Gravação de áudio em tempo real');
+console.log('- Salvamento/carregamento de sequências');
 console.log('- Área XY para controle em tempo real');
-console.log('Divirta-se criando música! 🎶');
+console.log('Divirta-se criando música! 🎶🎛️');
 </script>
 </body>
 </html>
