@@ -7,13 +7,41 @@
   <style>
     :root{--bg:#0b1220;--card:#0f1724;--accent:#1fb6ff;--muted:#98a0b3}
     html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;color:#e6eef8;background:linear-gradient(180deg,#071029 0%, #071b2f 100%)}
-    .app{max-width:1100px;margin:28px auto;padding:18px;display:grid;grid-template-columns:360px 1fr;gap:18px}
+    .app{max-width:1400px;margin:28px auto;padding:18px;display:grid;grid-template-columns:450px 1fr;gap:18px}
     .card{background:rgba(255,255,255,0.03);border-radius:12px;padding:14px;box-shadow:0 6px 20px rgba(2,6,23,0.6)}
     h1{margin:6px 0 12px;font-size:18px}
-    .pads{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-    .pad{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.04);padding:12px;border-radius:8px;cursor:pointer;user-select:none;text-align:center}
+    .pads{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+    .pad{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.04);padding:10px;border-radius:8px;cursor:pointer;user-select:none;text-align:center;font-size:12px;font-weight:500;transition:all 0.1s ease}
+    .pad:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.3)}
     .pad:active{transform:translateY(2px)}
+    
+    /* Drum pad colors */
+    .pad-kick{background:linear-gradient(135deg,#ff4757,#ff3838);color:white;border:1px solid #ff3838}
+    .pad-snare{background:linear-gradient(135deg,#ffa502,#ff6348);color:white;border:1px solid #ff6348}
+    .pad-hat{background:linear-gradient(135deg,#70a1ff,#5352ed);color:white;border:1px solid #5352ed}
+    .pad-crash{background:linear-gradient(135deg,#7bed9f,#2ed573);color:white;border:1px solid #2ed573}
+    .pad-ride{background:linear-gradient(135deg,#dda0dd,#9b59b6);color:white;border:1px solid #9b59b6}
+    .pad-tom{background:linear-gradient(135deg,#ffb8b8,#ff7675);color:white;border:1px solid #ff7675}
+    .pad-openhat{background:linear-gradient(135deg,#74b9ff,#0984e3);color:white;border:1px solid #0984e3}
+    .pad-clap{background:linear-gradient(135deg,#fd79a8,#e84393);color:white;border:1px solid #e84393}
+    .pad-perc{background:linear-gradient(135deg,#fdcb6e,#e17055);color:white;border:1px solid #e17055}
+    
+    /* Melodic instrument colors */
+    .pad-piano{background:linear-gradient(135deg,#636e72,#2d3436);color:white;border:1px solid #2d3436}
+    .pad-bass{background:linear-gradient(135deg,#a29bfe,#6c5ce7);color:white;border:1px solid #6c5ce7}
+    .pad-lead{background:linear-gradient(135deg,#fd79a8,#e84393);color:white;border:1px solid #e84393}
+    .pad-pad{background:linear-gradient(135deg,#00cec9,#00b894);color:white;border:1px solid #00b894}
+    .pad-pluck{background:linear-gradient(135deg,#fab1a0,#e17055);color:white;border:1px solid #e17055}
+    .pad-organ{background:linear-gradient(135deg,#55a3ff,#2d3436);color:white;border:1px solid #2d3436}
+    
+    /* Effect colors */
+    .pad-fx{background:linear-gradient(135deg,#a29bfe,#74b9ff);color:white;border:1px solid #74b9ff}
+    .pad-noise{background:linear-gradient(135deg,#636e72,#2d3436);color:white;border:1px solid #2d3436}
+    .pad-sweep{background:linear-gradient(135deg,#00b894,#00cec9);color:white;border:1px solid #00cec9}
+    
     .center{display:flex;flex-direction:column;gap:12px}
+    .pad-section{margin-bottom:20px}
+    .section-title{font-size:14px;font-weight:600;margin-bottom:8px;color:#1fb6ff;text-transform:uppercase;letter-spacing:0.5px}
     #xyCanvas{width:100%;height:420px;background:linear-gradient(180deg,#071b2f,#04202a);border-radius:10px;touch-action:none}
     .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
     label{font-size:12px;color:var(--muted)}
@@ -33,13 +61,39 @@
       <div class="meta">Toque os pads ou use a área central (XY) para manipular tom e timbre. Suporte para toque e mouse.</div>
       <hr style="margin:12px 0;border-color:rgba(255,255,255,0.03)" />
 
-      <div>
-        <div style="margin-bottom:8px"><strong>Pads de bateria</strong></div>
+      <div class="pad-section">
+        <div class="section-title">🥁 Bateria</div>
         <div class="pads">
-          <div class="pad" data-pad="kick">Bumbo (Kick)</div>
-          <div class="pad" data-pad="snare">Caixa (Snare)</div>
-          <div class="pad" data-pad="hat">Chimbal (Hat)</div>
-          <div class="pad" data-pad="tom">Tom</div>
+          <div class="pad pad-kick" data-pad="kick">KICK</div>
+          <div class="pad pad-snare" data-pad="snare">SNARE</div>
+          <div class="pad pad-hat" data-pad="hat">HI-HAT</div>
+          <div class="pad pad-openhat" data-pad="openhat">OPEN HAT</div>
+          <div class="pad pad-crash" data-pad="crash">CRASH</div>
+          <div class="pad pad-ride" data-pad="ride">RIDE</div>
+          <div class="pad pad-tom" data-pad="tom">TOM</div>
+          <div class="pad pad-clap" data-pad="clap">CLAP</div>
+          <div class="pad pad-perc" data-pad="perc">PERC</div>
+        </div>
+      </div>
+      
+      <div class="pad-section">
+        <div class="section-title">🎹 Instrumentos</div>
+        <div class="pads">
+          <div class="pad pad-piano" data-pad="piano">PIANO</div>
+          <div class="pad pad-bass" data-pad="bass">BASS</div>
+          <div class="pad pad-lead" data-pad="lead">LEAD</div>
+          <div class="pad pad-pad" data-pad="synthpad">PAD</div>
+          <div class="pad pad-pluck" data-pad="pluck">PLUCK</div>
+          <div class="pad pad-organ" data-pad="organ">ORGAN</div>
+        </div>
+      </div>
+      
+      <div class="pad-section">
+        <div class="section-title">🎛️ Efeitos</div>
+        <div class="pads">
+          <div class="pad pad-fx" data-pad="reverse">REVERSE</div>
+          <div class="pad pad-sweep" data-pad="sweep">SWEEP</div>
+          <div class="pad pad-noise" data-pad="whitenoise">NOISE</div>
         </div>
       </div>
 
@@ -117,7 +171,7 @@ modeSel.addEventListener('change',()=>{state.mode=modeSel.value; drawGuide();});
 startStopBtn.addEventListener('click',()=>{ if(!state.playing){ startTransport(); } else { stopTransport(); } });
 metroToggle.addEventListener('click',()=>{ state.metro = !state.metro; metroToggle.style.opacity = state.metro?1:0.6; });
 
-// --- Drum pads synthesis (simple) ---
+// --- Drum pads synthesis ---
 function playKick(time){
   const g = ctx.createGain(); g.gain.value = 1; g.connect(masterGain);
   const o = ctx.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(150, time);
@@ -127,6 +181,7 @@ function playKick(time){
   g.gain.exponentialRampToValueAtTime(0.001, time+0.6);
   o.connect(g); o.start(time); o.stop(time+0.7);
 }
+
 function playSnare(time){
   const noise = ctx.createBufferSource();
   noise.buffer = makeNoiseBuffer();
@@ -136,6 +191,7 @@ function playSnare(time){
   g.gain.setValueAtTime(1, time); g.gain.exponentialRampToValueAtTime(0.01, time+0.4);
   noise.start(time); noise.stop(time+0.5);
 }
+
 function playHat(time){
   const o = ctx.createOscillator(); o.type='square'; o.frequency.value=8000;
   const g = ctx.createGain(); g.gain.value=0.0001; g.connect(masterGain);
@@ -143,11 +199,152 @@ function playHat(time){
   g.gain.setValueAtTime(0.0001, time); g.gain.exponentialRampToValueAtTime(0.6, time+0.001); g.gain.exponentialRampToValueAtTime(0.0001, time+0.12);
   o.stop(time+0.15);
 }
+
+function playOpenHat(time){
+  const o = ctx.createOscillator(); o.type='square'; o.frequency.value=7000;
+  const g = ctx.createGain(); g.gain.value=0.0001; g.connect(masterGain);
+  o.connect(g); o.start(time);
+  g.gain.setValueAtTime(0.0001, time); g.gain.exponentialRampToValueAtTime(0.4, time+0.001); g.gain.exponentialRampToValueAtTime(0.0001, time+0.3);
+  o.stop(time+0.35);
+}
+
+function playCrash(time){
+  const noise = ctx.createBufferSource();
+  noise.buffer = makeNoiseBuffer();
+  const filter = ctx.createBiquadFilter(); filter.type='highpass'; filter.frequency.value = 3000;
+  const g = ctx.createGain(); g.gain.value=0.8; g.connect(masterGain);
+  noise.connect(filter); filter.connect(g);
+  g.gain.setValueAtTime(0.8, time); g.gain.exponentialRampToValueAtTime(0.001, time+2.0);
+  noise.start(time); noise.stop(time+2.5);
+}
+
+function playRide(time){
+  const o1 = ctx.createOscillator(); o1.type='triangle'; o1.frequency.value=4000;
+  const o2 = ctx.createOscillator(); o2.type='sine'; o2.frequency.value=8000;
+  const g = ctx.createGain(); g.gain.value=0.0001; g.connect(masterGain);
+  o1.connect(g); o2.connect(g); o1.start(time); o2.start(time);
+  g.gain.setValueAtTime(0.0001, time); g.gain.exponentialRampToValueAtTime(0.3, time+0.001); g.gain.exponentialRampToValueAtTime(0.0001, time+0.8);
+  o1.stop(time+0.9); o2.stop(time+0.9);
+}
+
 function playTom(time){
   const o = ctx.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(220, time); o.frequency.exponentialRampToValueAtTime(120, time+0.4);
   const g = ctx.createGain(); g.gain.value=1; g.connect(masterGain);
   g.gain.setValueAtTime(1, time); g.gain.exponentialRampToValueAtTime(0.001, time+0.6);
   o.connect(g); o.start(time); o.stop(time+0.8);
+}
+
+function playClap(time){
+  // Multiple quick noise bursts to simulate clap
+  for(let i = 0; i < 4; i++) {
+    const noise = ctx.createBufferSource();
+    noise.buffer = makeNoiseBuffer();
+    const filter = ctx.createBiquadFilter(); filter.type='bandpass'; filter.frequency.value = 1500;
+    const g = ctx.createGain(); g.gain.value=0.3; g.connect(masterGain);
+    noise.connect(filter); filter.connect(g);
+    const startTime = time + i * 0.01;
+    g.gain.setValueAtTime(0.3, startTime); g.gain.exponentialRampToValueAtTime(0.001, startTime+0.1);
+    noise.start(startTime); noise.stop(startTime+0.12);
+  }
+}
+
+function playPerc(time){
+  const o = ctx.createOscillator(); o.type='triangle'; o.frequency.setValueAtTime(800, time); o.frequency.exponentialRampToValueAtTime(200, time+0.2);
+  const g = ctx.createGain(); g.gain.value=0.6; g.connect(masterGain);
+  g.gain.setValueAtTime(0.6, time); g.gain.exponentialRampToValueAtTime(0.001, time+0.3);
+  o.connect(g); o.start(time); o.stop(time+0.4);
+}
+
+// --- Melodic instruments ---
+function playPiano(time, freq = 440){
+  // Simple piano-like sound with multiple harmonics
+  const o1 = ctx.createOscillator(); o1.type='sine'; o1.frequency.value=freq;
+  const o2 = ctx.createOscillator(); o2.type='sine'; o2.frequency.value=freq*2;
+  const o3 = ctx.createOscillator(); o3.type='sine'; o3.frequency.value=freq*3;
+  const g1 = ctx.createGain(); g1.gain.value=0.6;
+  const g2 = ctx.createGain(); g2.gain.value=0.3;
+  const g3 = ctx.createGain(); g3.gain.value=0.1;
+  const master = ctx.createGain(); master.connect(masterGain);
+  o1.connect(g1); o2.connect(g2); o3.connect(g3);
+  g1.connect(master); g2.connect(master); g3.connect(master);
+  master.gain.setValueAtTime(0.7, time); master.gain.exponentialRampToValueAtTime(0.001, time+2.0);
+  o1.start(time); o2.start(time); o3.start(time);
+  o1.stop(time+2.5); o2.stop(time+2.5); o3.stop(time+2.5);
+}
+
+function playBass(time, freq = 110){
+  const o = ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=freq;
+  const filter = ctx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=800;
+  const g = ctx.createGain(); g.gain.value=0.8; g.connect(masterGain);
+  o.connect(filter); filter.connect(g);
+  g.gain.setValueAtTime(0.8, time); g.gain.exponentialRampToValueAtTime(0.001, time+1.2);
+  o.start(time); o.stop(time+1.5);
+}
+
+function playLead(time, freq = 880){
+  const o = ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=freq;
+  const filter = ctx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=3000;
+  const g = ctx.createGain(); g.gain.value=0.6; g.connect(masterGain);
+  o.connect(filter); filter.connect(g);
+  g.gain.setValueAtTime(0.6, time); g.gain.exponentialRampToValueAtTime(0.001, time+1.5);
+  o.start(time); o.stop(time+2.0);
+}
+
+function playSynthPad(time, freq = 220){
+  const o1 = ctx.createOscillator(); o1.type='sawtooth'; o1.frequency.value=freq;
+  const o2 = ctx.createOscillator(); o2.type='sawtooth'; o2.frequency.value=freq*1.5;
+  const filter = ctx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=1500;
+  const g = ctx.createGain(); g.gain.value=0.4; g.connect(masterGain);
+  o1.connect(filter); o2.connect(filter); filter.connect(g);
+  g.gain.setValueAtTime(0.001, time); g.gain.exponentialRampToValueAtTime(0.4, time+0.3); g.gain.exponentialRampToValueAtTime(0.001, time+3.0);
+  o1.start(time); o2.start(time); o1.stop(time+3.5); o2.stop(time+3.5);
+}
+
+function playPluck(time, freq = 440){
+  const o = ctx.createOscillator(); o.type='triangle'; o.frequency.value=freq;
+  const g = ctx.createGain(); g.gain.value=0.7; g.connect(masterGain);
+  o.connect(g);
+  g.gain.setValueAtTime(0.7, time); g.gain.exponentialRampToValueAtTime(0.001, time+0.8);
+  o.start(time); o.stop(time+1.0);
+}
+
+function playOrgan(time, freq = 330){
+  const o1 = ctx.createOscillator(); o1.type='sine'; o1.frequency.value=freq;
+  const o2 = ctx.createOscillator(); o2.type='sine'; o2.frequency.value=freq*2;
+  const o3 = ctx.createOscillator(); o3.type='sine'; o3.frequency.value=freq*3;
+  const g = ctx.createGain(); g.gain.value=0.5; g.connect(masterGain);
+  o1.connect(g); o2.connect(g); o3.connect(g);
+  g.gain.setValueAtTime(0.001, time); g.gain.exponentialRampToValueAtTime(0.5, time+0.1); g.gain.exponentialRampToValueAtTime(0.001, time+2.5);
+  o1.start(time); o2.start(time); o3.start(time);
+  o1.stop(time+3.0); o2.stop(time+3.0); o3.stop(time+3.0);
+}
+
+// --- Effects ---
+function playReverse(time){
+  // Simulated reverse effect with sweep
+  const o = ctx.createOscillator(); o.type='sawtooth'; o.frequency.setValueAtTime(100, time); o.frequency.exponentialRampToValueAtTime(1000, time+1.0);
+  const g = ctx.createGain(); g.gain.value=0.5; g.connect(masterGain);
+  o.connect(g);
+  g.gain.setValueAtTime(0.001, time); g.gain.exponentialRampToValueAtTime(0.5, time+1.0); g.gain.exponentialRampToValueAtTime(0.001, time+1.2);
+  o.start(time); o.stop(time+1.5);
+}
+
+function playSweep(time){
+  const o = ctx.createOscillator(); o.type='sawtooth'; o.frequency.setValueAtTime(2000, time); o.frequency.exponentialRampToValueAtTime(200, time+0.8);
+  const filter = ctx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.setValueAtTime(4000, time); filter.frequency.exponentialRampToValueAtTime(500, time+0.8);
+  const g = ctx.createGain(); g.gain.value=0.6; g.connect(masterGain);
+  o.connect(filter); filter.connect(g);
+  g.gain.setValueAtTime(0.6, time); g.gain.exponentialRampToValueAtTime(0.001, time+1.0);
+  o.start(time); o.stop(time+1.2);
+}
+
+function playWhiteNoise(time){
+  const noise = ctx.createBufferSource();
+  noise.buffer = makeNoiseBuffer();
+  const g = ctx.createGain(); g.gain.value=0.3; g.connect(masterGain);
+  noise.connect(g);
+  g.gain.setValueAtTime(0.3, time); g.gain.exponentialRampToValueAtTime(0.001, time+0.5);
+  noise.start(time); noise.stop(time+0.8);
 }
 
 function makeNoiseBuffer(){
@@ -160,7 +357,39 @@ function makeNoiseBuffer(){
 
 // Hook pads UI
 document.querySelectorAll('.pad').forEach(el=>{
-  el.addEventListener('pointerdown',async (e)=>{ await ensureResume(); const p = el.dataset.pad; const t = now(); if(p==='kick') playKick(t); if(p==='snare') playSnare(t); if(p==='hat') playHat(t); if(p==='tom') playTom(t); });
+  el.addEventListener('pointerdown',async (e)=>{ 
+    await ensureResume(); 
+    const p = el.dataset.pad; 
+    const t = now();
+    
+    // Drum sounds
+    if(p==='kick') playKick(t);
+    else if(p==='snare') playSnare(t);
+    else if(p==='hat') playHat(t);
+    else if(p==='openhat') playOpenHat(t);
+    else if(p==='crash') playCrash(t);
+    else if(p==='ride') playRide(t);
+    else if(p==='tom') playTom(t);
+    else if(p==='clap') playClap(t);
+    else if(p==='perc') playPerc(t);
+    
+    // Melodic instruments
+    else if(p==='piano') playPiano(t, 440);
+    else if(p==='bass') playBass(t, 110);
+    else if(p==='lead') playLead(t, 880);
+    else if(p==='synthpad') playSynthPad(t, 220);
+    else if(p==='pluck') playPluck(t, 660);
+    else if(p==='organ') playOrgan(t, 330);
+    
+    // Effects
+    else if(p==='reverse') playReverse(t);
+    else if(p==='sweep') playSweep(t);
+    else if(p==='whitenoise') playWhiteNoise(t);
+    
+    // Visual feedback
+    el.style.transform = 'scale(0.95)';
+    setTimeout(() => { el.style.transform = ''; }, 100);
+  });
 });
 
 // --- Transport / metronome ---
@@ -277,7 +506,12 @@ renderPresets();
 window.addEventListener('pointerdown',()=>{ if(ctx.state==='suspended') ctx.resume(); });
 
 // Final note: friendly help
-console.log('Sintetizador pronto. Toque na área central para experimentar modos: oscillator / sampleBlend / drumMorph.');
+console.log('🎵 Pad Musical Completo carregado! 🎵');
+console.log('- 9 sons de bateria coloridos');
+console.log('- 6 instrumentos melódicos');
+console.log('- 3 efeitos sonoros');
+console.log('- Área XY para controle em tempo real');
+console.log('Divirta-se criando música! 🎶');
 </script>
 </body>
 </html>
