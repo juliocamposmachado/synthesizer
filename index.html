@@ -2112,6 +2112,297 @@ function playOrgan(time, freq = 330){
   o1.stop(time+3.0); o2.stop(time+3.0); o3.stop(time+3.0);
 }
 
+// Electric Piano
+function playEPiano(time, freq = 440){
+  const o1 = ctx.createOscillator(); o1.type='triangle'; o1.frequency.value=freq;
+  const o2 = ctx.createOscillator(); o2.type='sine'; o2.frequency.value=freq*2.1;
+  const filter = ctx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=1200;
+  const g = ctx.createGain(); g.gain.value=0.7; g.connect(masterGain);
+  o1.connect(filter); o2.connect(filter); filter.connect(g);
+  g.gain.setValueAtTime(0.7, time); g.gain.exponentialRampToValueAtTime(0.001, time+1.5);
+  o1.start(time); o2.start(time); o1.stop(time+2.0); o2.stop(time+2.0);
+}
+
+// Hammond Organ
+function playHammond(time, freq = 220){
+  const o1 = ctx.createOscillator(); o1.type='sine'; o1.frequency.value=freq;
+  const o2 = ctx.createOscillator(); o2.type='sine'; o2.frequency.value=freq*2;
+  const o3 = ctx.createOscillator(); o3.type='sine'; o3.frequency.value=freq*3;
+  const o4 = ctx.createOscillator(); o4.type='sine'; o4.frequency.value=freq*4;
+  const filter = ctx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=800; filter.Q.value=5;
+  const g = ctx.createGain(); g.gain.value=0.6; g.connect(masterGain);
+  o1.connect(filter); o2.connect(filter); o3.connect(filter); o4.connect(filter);
+  filter.connect(g);
+  g.gain.setValueAtTime(0.001, time); g.gain.exponentialRampToValueAtTime(0.6, time+0.1);
+  g.gain.exponentialRampToValueAtTime(0.4, time+1.0); g.gain.exponentialRampToValueAtTime(0.001, time+2.0);
+  o1.start(time); o2.start(time); o3.start(time); o4.start(time);
+  o1.stop(time+2.5); o2.stop(time+2.5); o3.stop(time+2.5); o4.stop(time+2.5);
+}
+
+// Church Organ
+function playChurch(time, freq = 165){
+  const o1 = ctx.createOscillator(); o1.type='sine'; o1.frequency.value=freq;
+  const o2 = ctx.createOscillator(); o2.type='sine'; o2.frequency.value=freq*2;
+  const o3 = ctx.createOscillator(); o3.type='sine'; o3.frequency.value=freq*4;
+  const o4 = ctx.createOscillator(); o4.type='sine'; o4.frequency.value=freq*5.33;
+  const o5 = ctx.createOscillator(); o5.type='sine'; o5.frequency.value=freq*8;
+  const g = ctx.createGain(); g.gain.value=0.7; g.connect(masterGain);
+  o1.connect(g); o2.connect(g); o3.connect(g); o4.connect(g); o5.connect(g);
+  g.gain.setValueAtTime(0.001, time); g.gain.exponentialRampToValueAtTime(0.7, time+0.2);
+  g.gain.exponentialRampToValueAtTime(0.5, time+2.0); g.gain.exponentialRampToValueAtTime(0.001, time+4.0);
+  o1.start(time); o2.start(time); o3.start(time); o4.start(time); o5.start(time);
+  o1.stop(time+4.5); o2.stop(time+4.5); o3.stop(time+4.5); o4.stop(time+4.5); o5.stop(time+4.5);
+}
+
+// Accordion
+function playAccordion(time, freq = 330){
+  const o1 = ctx.createOscillator(); o1.type='sawtooth'; o1.frequency.value=freq;
+  const o2 = ctx.createOscillator(); o2.type='square'; o2.frequency.value=freq*1.01; // slight detune
+  const vibrato = ctx.createOscillator(); vibrato.type='sine'; vibrato.frequency.value=5;
+  const vibratoGain = ctx.createGain(); vibratoGain.gain.value=3;
+  const filter = ctx.createBiquadFilter(); filter.type='bandpass'; filter.frequency.value=1000;
+  const g = ctx.createGain(); g.gain.value=0.5; g.connect(masterGain);
+  vibrato.connect(vibratoGain); vibratoGain.connect(o1.frequency); vibratoGain.connect(o2.frequency);
+  o1.connect(filter); o2.connect(filter); filter.connect(g);
+  g.gain.setValueAtTime(0.001, time); g.gain.exponentialRampToValueAtTime(0.5, time+0.1);
+  g.gain.exponentialRampToValueAtTime(0.001, time+2.0);
+  vibrato.start(time); o1.start(time); o2.start(time);
+  vibrato.stop(time+2.5); o1.stop(time+2.5); o2.stop(time+2.5);
+}
+
+// Harmonica
+function playHarmonica(time, freq = 440){
+  const o1 = ctx.createOscillator(); o1.type='square'; o1.frequency.value=freq;
+  const o2 = ctx.createOscillator(); o2.type='sawtooth'; o2.frequency.value=freq*1.005; // detune
+  const filter = ctx.createBiquadFilter(); filter.type='bandpass'; filter.frequency.value=1500; filter.Q.value=8;
+  const tremolo = ctx.createOscillator(); tremolo.type='sine'; tremolo.frequency.value=8;
+  const tremoloGain = ctx.createGain(); tremoloGain.gain.value=0.3;
+  const g = ctx.createGain(); g.gain.value=0.4; g.connect(masterGain);
+  tremolo.connect(tremoloGain); tremoloGain.connect(g.gain);
+  o1.connect(filter); o2.connect(filter); filter.connect(g);
+  g.gain.setValueAtTime(0.4, time); g.gain.exponentialRampToValueAtTime(0.001, time+1.5);
+  tremolo.start(time); o1.start(time); o2.start(time);
+  tremolo.stop(time+2.0); o1.stop(time+2.0); o2.stop(time+2.0);
+}
+
+// Concertina
+function playConcertina(time, freq = 330){
+  const o1 = ctx.createOscillator(); o1.type='triangle'; o1.frequency.value=freq;
+  const o2 = ctx.createOscillator(); o2.type='square'; o2.frequency.value=freq*2;
+  const breathNoise = ctx.createBufferSource(); breathNoise.buffer = makeNoiseBuffer();
+  const noiseFilter = ctx.createBiquadFilter(); noiseFilter.type='highpass'; noiseFilter.frequency.value=2000;
+  const noiseGain = ctx.createGain(); noiseGain.gain.value=0.1;
+  const g = ctx.createGain(); g.gain.value=0.4; g.connect(masterGain);
+  breathNoise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(g);
+  o1.connect(g); o2.connect(g);
+  g.gain.setValueAtTime(0.001, time); g.gain.exponentialRampToValueAtTime(0.4, time+0.05);
+  g.gain.exponentialRampToValueAtTime(0.001, time+1.2);
+  breathNoise.start(time); o1.start(time); o2.start(time);
+  breathNoise.stop(time+1.5); o1.stop(time+1.5); o2.stop(time+1.5);
+}
+
+// Grand Piano
+function playGrandPiano(time, freq = 440){
+  const o1 = ctx.createOscillator(); o1.type='triangle'; o1.frequency.value=freq;
+  const o2 = ctx.createOscillator(); o2.type='sine'; o2.frequency.value=freq*2;
+  const o3 = ctx.createOscillator(); o3.type='sine'; o3.frequency.value=freq*4;
+  const o4 = ctx.createOscillator(); o4.type='sine'; o4.frequency.value=freq*6;
+  const g1 = ctx.createGain(); g1.gain.value=0.8;
+  const g2 = ctx.createGain(); g2.gain.value=0.4;
+  const g3 = ctx.createGain(); g3.gain.value=0.2;
+  const g4 = ctx.createGain(); g4.gain.value=0.1;
+  const master = ctx.createGain(); master.connect(masterGain);
+  o1.connect(g1); o2.connect(g2); o3.connect(g3); o4.connect(g4);
+  g1.connect(master); g2.connect(master); g3.connect(master); g4.connect(master);
+  master.gain.setValueAtTime(0.6, time); master.gain.exponentialRampToValueAtTime(0.001, time+3.0);
+  o1.start(time); o2.start(time); o3.start(time); o4.start(time);
+  o1.stop(time+3.5); o2.stop(time+3.5); o3.stop(time+3.5); o4.stop(time+3.5);
+}
+
+// Harpsichord
+function playHarpsichord(time, freq = 440){
+  const o1 = ctx.createOscillator(); o1.type='sawtooth'; o1.frequency.value=freq;
+  const o2 = ctx.createOscillator(); o2.type='triangle'; o2.frequency.value=freq*2;
+  const filter = ctx.createBiquadFilter(); filter.type='highpass'; filter.frequency.value=800;
+  const g = ctx.createGain(); g.gain.value=0.6; g.connect(masterGain);
+  o1.connect(filter); o2.connect(filter); filter.connect(g);
+  g.gain.setValueAtTime(0.6, time); g.gain.exponentialRampToValueAtTime(0.001, time+0.8);
+  o1.start(time); o2.start(time); o1.stop(time+1.2); o2.stop(time+1.2);
+}
+
+// Ragtime Piano
+function playRagtime(time, freq = 440){
+  const o1 = ctx.createOscillator(); o1.type='square'; o1.frequency.value=freq;
+  const o2 = ctx.createOscillator(); o2.type='triangle'; o2.frequency.value=freq*1.5;
+  const filter = ctx.createBiquadFilter(); filter.type='bandpass'; filter.frequency.value=1000;
+  const g = ctx.createGain(); g.gain.value=0.5; g.connect(masterGain);
+  o1.connect(filter); o2.connect(filter); filter.connect(g);
+  g.gain.setValueAtTime(0.5, time); g.gain.exponentialRampToValueAtTime(0.001, time+1.0);
+  o1.start(time); o2.start(time); o1.stop(time+1.5); o2.stop(time+1.5);
+}
+
+// Music Box
+function playMusicBox(time, freq = 880){
+  const o = ctx.createOscillator(); o.type='sine'; o.frequency.value=freq;
+  const filter = ctx.createBiquadFilter(); filter.type='highpass'; filter.frequency.value=2000;
+  const g = ctx.createGain(); g.gain.value=0.4; g.connect(masterGain);
+  o.connect(filter); filter.connect(g);
+  g.gain.setValueAtTime(0.4, time); g.gain.exponentialRampToValueAtTime(0.001, time+2.0);
+  o.start(time); o.stop(time+2.5);
+}
+
+// --- Additional Synthesizers ---
+// Arpeggiator
+function playArp(time, freq = 440){
+  const frequencies = [freq, freq*1.25, freq*1.5, freq*2]; // Major chord arpeggio
+  frequencies.forEach((f, i) => {
+    const o = ctx.createOscillator(); o.type='square'; o.frequency.value=f;
+    const filter = ctx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=2000;
+    const g = ctx.createGain(); g.gain.value=0.3; g.connect(masterGain);
+    o.connect(filter); filter.connect(g);
+    const noteTime = time + i * 0.1;
+    g.gain.setValueAtTime(0.001, noteTime); g.gain.exponentialRampToValueAtTime(0.3, noteTime+0.01);
+    g.gain.exponentialRampToValueAtTime(0.001, noteTime+0.15);
+    o.start(noteTime); o.stop(noteTime+0.2);
+  });
+}
+
+// Sequence Synth
+function playSequence(time, freq = 550){
+  const notes = [freq, freq*1.125, freq*1.33, freq*1.5]; // Different intervals
+  notes.forEach((f, i) => {
+    const o = ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=f;
+    const filter = ctx.createBiquadFilter(); filter.type='lowpass'; 
+    filter.frequency.setValueAtTime(3000, time + i*0.08); filter.frequency.exponentialRampToValueAtTime(800, time + i*0.08 + 0.1);
+    const g = ctx.createGain(); g.gain.value=0.25; g.connect(masterGain);
+    o.connect(filter); filter.connect(g);
+    const noteTime = time + i * 0.08;
+    g.gain.setValueAtTime(0.25, noteTime); g.gain.exponentialRampToValueAtTime(0.001, noteTime+0.12);
+    o.start(noteTime); o.stop(noteTime+0.15);
+  });
+}
+
+// Poly Synth
+function playPolySynth(time, freq = 330){
+  const chord = [freq, freq*1.25, freq*1.5, freq*2]; // Major chord
+  chord.forEach(f => {
+    const o = ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=f;
+    const filter = ctx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=1500; filter.Q.value=3;
+    const g = ctx.createGain(); g.gain.value=0.15; g.connect(masterGain);
+    o.connect(filter); filter.connect(g);
+    g.gain.setValueAtTime(0.001, time); g.gain.exponentialRampToValueAtTime(0.15, time+0.1);
+    g.gain.exponentialRampToValueAtTime(0.001, time+2.0);
+    o.start(time); o.stop(time+2.5);
+  });
+}
+
+// Mono Synth
+function playMonoSynth(time, freq = 220){
+  const o = ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=freq;
+  const filter = ctx.createBiquadFilter(); filter.type='lowpass'; 
+  filter.frequency.setValueAtTime(4000, time); filter.frequency.exponentialRampToValueAtTime(800, time+0.3);
+  filter.Q.value=10;
+  const g = ctx.createGain(); g.gain.value=0.7; g.connect(masterGain);
+  o.connect(filter); filter.connect(g);
+  g.gain.setValueAtTime(0.7, time); g.gain.exponentialRampToValueAtTime(0.001, time+1.0);
+  o.start(time); o.stop(time+1.2);
+}
+
+// FM Synth
+function playFMSynth(time, freq = 440){
+  const carrier = ctx.createOscillator(); carrier.type='sine'; carrier.frequency.value=freq;
+  const modulator = ctx.createOscillator(); modulator.type='sine'; modulator.frequency.value=freq*2;
+  const modGain = ctx.createGain(); modGain.gain.value=100;
+  const g = ctx.createGain(); g.gain.value=0.5; g.connect(masterGain);
+  modulator.connect(modGain); modGain.connect(carrier.frequency);
+  carrier.connect(g);
+  g.gain.setValueAtTime(0.001, time); g.gain.exponentialRampToValueAtTime(0.5, time+0.05);
+  g.gain.exponentialRampToValueAtTime(0.001, time+1.5);
+  modulator.start(time); carrier.start(time);
+  modulator.stop(time+2.0); carrier.stop(time+2.0);
+}
+
+// --- String Instruments ---
+// Violin
+function playViolin(time, freq = 659){
+  const o = ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=freq;
+  const vibrato = ctx.createOscillator(); vibrato.type='sine'; vibrato.frequency.value=6;
+  const vibratoGain = ctx.createGain(); vibratoGain.gain.value=2;
+  const filter = ctx.createBiquadFilter(); filter.type='bandpass'; filter.frequency.value=1500; filter.Q.value=5;
+  const g = ctx.createGain(); g.gain.value=0.6; g.connect(masterGain);
+  vibrato.connect(vibratoGain); vibratoGain.connect(o.frequency);
+  o.connect(filter); filter.connect(g);
+  g.gain.setValueAtTime(0.001, time); g.gain.exponentialRampToValueAtTime(0.6, time+0.2);
+  g.gain.exponentialRampToValueAtTime(0.4, time+1.5); g.gain.exponentialRampToValueAtTime(0.001, time+2.5);
+  vibrato.start(time); o.start(time); vibrato.stop(time+3.0); o.stop(time+3.0);
+}
+
+// Viola
+function playViola(time, freq = 440){
+  const o = ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=freq;
+  const vibrato = ctx.createOscillator(); vibrato.type='sine'; vibrato.frequency.value=5;
+  const vibratoGain = ctx.createGain(); vibratoGain.gain.value=1.5;
+  const filter = ctx.createBiquadFilter(); filter.type='bandpass'; filter.frequency.value=1200; filter.Q.value=4;
+  const g = ctx.createGain(); g.gain.value=0.5; g.connect(masterGain);
+  vibrato.connect(vibratoGain); vibratoGain.connect(o.frequency);
+  o.connect(filter); filter.connect(g);
+  g.gain.setValueAtTime(0.001, time); g.gain.exponentialRampToValueAtTime(0.5, time+0.15);
+  g.gain.exponentialRampToValueAtTime(0.001, time+2.2);
+  vibrato.start(time); o.start(time); vibrato.stop(time+2.5); o.stop(time+2.5);
+}
+
+// Cello
+function playCello(time, freq = 264){
+  const o = ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=freq;
+  const vibrato = ctx.createOscillator(); vibrato.type='sine'; vibrato.frequency.value=4;
+  const vibratoGain = ctx.createGain(); vibratoGain.gain.value=1;
+  const filter = ctx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=800; filter.Q.value=3;
+  const g = ctx.createGain(); g.gain.value=0.7; g.connect(masterGain);
+  vibrato.connect(vibratoGain); vibratoGain.connect(o.frequency);
+  o.connect(filter); filter.connect(g);
+  g.gain.setValueAtTime(0.001, time); g.gain.exponentialRampToValueAtTime(0.7, time+0.3);
+  g.gain.exponentialRampToValueAtTime(0.5, time+2.0); g.gain.exponentialRampToValueAtTime(0.001, time+3.5);
+  vibrato.start(time); o.start(time); vibrato.stop(time+4.0); o.stop(time+4.0);
+}
+
+// Contrabass
+function playContrabass(time, freq = 130){
+  const o = ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=freq;
+  const filter = ctx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=400; filter.Q.value=2;
+  const g = ctx.createGain(); g.gain.value=0.8; g.connect(masterGain);
+  o.connect(filter); filter.connect(g);
+  g.gain.setValueAtTime(0.001, time); g.gain.exponentialRampToValueAtTime(0.8, time+0.4);
+  g.gain.exponentialRampToValueAtTime(0.6, time+2.5); g.gain.exponentialRampToValueAtTime(0.001, time+4.0);
+  o.start(time); o.stop(time+4.5);
+}
+
+// Strings Section
+function playStrings(time, freq = 440){
+  const notes = [freq, freq*1.25, freq*1.5, freq*2]; // String section chord
+  notes.forEach((f, i) => {
+    const o = ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=f;
+    const vibrato = ctx.createOscillator(); vibrato.type='sine'; vibrato.frequency.value=5 + i*0.2;
+    const vibratoGain = ctx.createGain(); vibratoGain.gain.value=1;
+    const filter = ctx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=1500 - i*200;
+    const g = ctx.createGain(); g.gain.value=0.2; g.connect(masterGain);
+    vibrato.connect(vibratoGain); vibratoGain.connect(o.frequency);
+    o.connect(filter); filter.connect(g);
+    g.gain.setValueAtTime(0.001, time); g.gain.exponentialRampToValueAtTime(0.2, time+0.5);
+    g.gain.exponentialRampToValueAtTime(0.001, time+3.0);
+    vibrato.start(time); o.start(time); vibrato.stop(time+3.5); o.stop(time+3.5);
+  });
+}
+
+// Pizzicato
+function playPizzicato(time, freq = 440){
+  const o = ctx.createOscillator(); o.type='triangle'; o.frequency.value=freq;
+  const filter = ctx.createBiquadFilter(); filter.type='bandpass'; filter.frequency.value=1500; filter.Q.value=8;
+  const g = ctx.createGain(); g.gain.value=0.8; g.connect(masterGain);
+  o.connect(filter); filter.connect(g);
+  g.gain.setValueAtTime(0.8, time); g.gain.exponentialRampToValueAtTime(0.001, time+0.5);
+  o.start(time); o.stop(time+0.8);
+}
+
 // --- Effects ---
 function playReverse(time){
   // Simulated reverse effect with sweep
@@ -2412,13 +2703,40 @@ document.querySelectorAll('.pad').forEach(el=>{
     else if(p==='clap') playClap(t);
     else if(p==='perc') playPerc(t);
     
-    // Melodic instruments
+    // Piano & Keyboard instruments
     else if(p==='piano') playPiano(t, 440);
+    else if(p==='epiano') playEPiano(t, 440);
+    else if(p==='grandpiano') playGrandPiano(t, 440);
+    else if(p==='harpsichord') playHarpsichord(t, 440);
+    else if(p==='ragtime') playRagtime(t, 440);
+    else if(p==='musicbox') playMusicBox(t, 880);
+    
+    // Organs & Keys
+    else if(p==='organ') playOrgan(t, 330);
+    else if(p==='hammond') playHammond(t, 220);
+    else if(p==='church') playChurch(t, 165);
+    else if(p==='accordion') playAccordion(t, 330);
+    else if(p==='harmonica') playHarmonica(t, 440);
+    else if(p==='concertina') playConcertina(t, 330);
+    
+    // Synthesizers
     else if(p==='bass') playBass(t, 110);
     else if(p==='lead') playLead(t, 880);
     else if(p==='synthpad') playSynthPad(t, 220);
     else if(p==='pluck') playPluck(t, 660);
-    else if(p==='organ') playOrgan(t, 330);
+    else if(p==='arp') playArp(t, 440);
+    else if(p==='sequence') playSequence(t, 550);
+    else if(p==='polysynth') playPolySynth(t, 330);
+    else if(p==='monosynth') playMonoSynth(t, 220);
+    else if(p==='fm') playFMSynth(t, 440);
+    
+    // String instruments
+    else if(p==='violin') playViolin(t, 659);
+    else if(p==='viola') playViola(t, 440);
+    else if(p==='cello') playCello(t, 264);
+    else if(p==='contrabass') playContrabass(t, 130);
+    else if(p==='strings') playStrings(t, 440);
+    else if(p==='pizzicato') playPizzicato(t, 440);
     
     // Effects
     else if(p==='reverse') playReverse(t);
