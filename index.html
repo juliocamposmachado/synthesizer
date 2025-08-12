@@ -11,7 +11,34 @@
     
     html,body{height:100%;margin:0;font-family:'Inter',system-ui,-apple-system,Arial,sans-serif;color:#e6eef8;background:linear-gradient(180deg,#071029 0%, #071b2f 100%);line-height:1.5}
     
-    .app{max-width:1800px;margin:20px auto;padding:20px;display:flex;flex-wrap:wrap;gap:20px;min-height:calc(100vh - 80px)}
+    .app{max-width:1800px;margin:20px auto;padding:20px;display:flex;flex-direction:column;gap:20px;min-height:calc(100vh - 80px);align-items:center}
+    
+    .app.multi-column{flex-direction:row;flex-wrap:wrap;align-items:stretch}
+    
+    .layout-toggle{
+      position:fixed;
+      top:20px;
+      right:20px;
+      background:var(--accent);
+      border:none;
+      color:#022233;
+      padding:12px 16px;
+      border-radius:8px;
+      cursor:pointer;
+      font-size:12px;
+      font-weight:600;
+      text-transform:uppercase;
+      z-index:10004;
+      transition:all 0.2s ease;
+      box-shadow:0 4px 15px rgba(31,182,255,0.4);
+      backdrop-filter:blur(10px);
+      user-select:none;
+    }
+    
+    .layout-toggle:hover{
+      transform:translateY(-2px);
+      box-shadow:0 6px 20px rgba(31,182,255,0.6);
+    }
     
     .card-container{
       flex:1;
@@ -741,6 +768,9 @@
   </style>
 </head>
 <body>
+  <!-- Layout Toggle Button -->
+  <button class="layout-toggle" id="layoutToggle">📋 LINHA ÚNICA</button>
+  
   <div class="app" id="appContainer">
     <!-- Controls Card -->
     <div class="card-container controls">
@@ -2086,6 +2116,108 @@ document.head.appendChild(notificationStyles);
 
 // Initialize patch controls when page loads
 initPatchControls();
+
+// --- Layout Toggle Functionality ---
+const layoutToggle = document.getElementById('layoutToggle');
+const appContainer = document.getElementById('appContainer');
+
+layoutToggle.addEventListener('click', () => {
+  const isMultiColumn = appContainer.classList.contains('multi-column');
+  
+  if (isMultiColumn) {
+    // Switch to single column (centered)
+    appContainer.classList.remove('multi-column');
+    layoutToggle.textContent = '📋 LINHA ÚNICA';
+    showLayoutChangeNotification('Linha única ativada - Cards centralizados');
+  } else {
+    // Switch to multi-column
+    appContainer.classList.add('multi-column');
+    layoutToggle.textContent = '📊 MÚLTIPLAS COLUNAS';
+    showLayoutChangeNotification('Múltiplas colunas ativadas - Layout flexível');
+  }
+  
+  // Save layout preference
+  localStorage.setItem('synthbat_layout_mode', isMultiColumn ? 'single' : 'multi');
+});
+
+// Load saved layout mode
+function loadLayoutMode() {
+  const savedMode = localStorage.getItem('synthbat_layout_mode');
+  if (savedMode === 'multi') {
+    appContainer.classList.add('multi-column');
+    layoutToggle.textContent = '📊 MÚLTIPLAS COLUNAS';
+  } else {
+    appContainer.classList.remove('multi-column');
+    layoutToggle.textContent = '📋 LINHA ÚNICA';
+  }
+}
+
+function showLayoutChangeNotification(message) {
+  const notification = document.createElement('div');
+  notification.className = 'layout-change-notification';
+  notification.innerHTML = `
+    <div class="notification-content">
+      🔧 ${message}
+    </div>
+  `;
+  
+  // Style the notification
+  Object.assign(notification.style, {
+    position: 'fixed',
+    top: '70px',
+    right: '20px',
+    background: 'linear-gradient(135deg, var(--success), #27ae60)',
+    color: '#fff',
+    padding: '12px 16px',
+    borderRadius: '8px',
+    fontWeight: '600',
+    fontSize: '13px',
+    zIndex: '10005',
+    boxShadow: '0 4px 15px rgba(46,213,115,0.4)',
+    animation: 'slideInRight 0.3s ease, slideOutRight 0.3s ease 2.5s',
+    backdropFilter: 'blur(10px)'
+  });
+  
+  // Add to page
+  document.body.appendChild(notification);
+  
+  // Remove after animation
+  setTimeout(() => {
+    if (document.body.contains(notification)) {
+      document.body.removeChild(notification);
+    }
+  }, 3000);
+}
+
+// Add CSS animations for layout notifications
+const layoutNotificationStyles = document.createElement('style');
+layoutNotificationStyles.textContent = `
+  @keyframes slideInRight {
+    0% {
+      transform: translateX(100px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideOutRight {
+    0% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(100px);
+      opacity: 0;
+    }
+  }
+`;
+document.head.appendChild(layoutNotificationStyles);
+
+// Load layout mode on startup
+loadLayoutMode();
 
 // Final note: friendly help
 console.log('🎵 SynthBat Studio com Patches de Ritmo carregado! 🎵');
