@@ -1,5 +1,8 @@
 # 🎛️ SynthBat Studio - Sintetizador e Sequenciador Musical Avançado
 
+<img width="1346" height="752" alt="image" src="https://github.com/user-attachments/assets/7adc56e1-c4d3-40fb-a764-b6aa26e69ee9" />
+
+
 **Uma aplicação web musical completa que combina sintetizador, bateria virtual e sequenciador profissional em uma interface moderna e personalizável.**
 
 [![Deploy](https://img.shields.io/badge/deploy-vercel-black?style=for-the-badge&logo=vercel)](https://syntbat-ftz4i9ohz-astridnielsen-labs-projects.vercel.app)
