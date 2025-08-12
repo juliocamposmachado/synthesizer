@@ -286,6 +286,21 @@
       border-color:var(--warning);
       color:#022233;
     }
+
+    .pin-btn.pinned{
+      background:var(--success);
+      border-color:var(--success);
+      color:#022233;
+      transform:scale(1.1);
+    }
+
+    .card.pinned{
+      cursor:default !important;
+    }
+
+    .card.pinned .card-header{
+      cursor:default !important;
+    }
     
     .card-title{
       font-size:20px;
@@ -1426,6 +1441,7 @@
           </div>
           <div class="card-controls">
             <div class="card-btn collapse-btn" title="Recolher/Expandir" data-card="xyCard">−</div>
+            <div class="card-btn pin-btn" title="Fixar/Desfixar Card" data-card="xyCard">📌</div>
             <div class="card-btn" title="Arrastar para reorganizar">⋮⋮</div>
           </div>
         </div>
@@ -2266,6 +2282,13 @@ let dragOffset = { x: 0, y: 0 };
 // Make cards draggable
 document.querySelectorAll('.card').forEach(card => {
   card.addEventListener('dragstart', (e) => {
+    // Check if card is pinned
+    if (card.classList.contains('pinned')) {
+      e.preventDefault();
+      showPinNotification('Card está fixado - Clique no 📌 para desfixar', '#ff4757');
+      return;
+    }
+    
     draggedCard = card;
     card.classList.add('dragging');
     
@@ -2315,6 +2338,105 @@ document.getElementById('appContainer').addEventListener('drop', (e) => {
     saveLayout();
   }
 });
+
+// --- Card Pin/Unpin Functionality ---
+document.querySelectorAll('.pin-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const cardId = btn.dataset.card;
+    const card = document.getElementById(cardId);
+    
+    if (card.classList.contains('pinned')) {
+      // Unpin card
+      card.classList.remove('pinned');
+      card.draggable = true;
+      btn.classList.remove('pinned');
+      btn.title = 'Fixar Card';
+      
+      // Show notification
+      showPinNotification('Card desfixado - Agora pode ser movido', '#ff4757');
+    } else {
+      // Pin card
+      card.classList.add('pinned');
+      card.draggable = false;
+      btn.classList.add('pinned');
+      btn.title = 'Desfixar Card';
+      
+      // Show notification
+      showPinNotification('Card fixado - Não se moverá durante uso', '#2ed573');
+    }
+    
+    // Save pin state
+    savePinState();
+  });
+});
+
+function showPinNotification(message, color) {
+  const notification = document.createElement('div');
+  notification.className = 'pin-notification';
+  notification.innerHTML = `
+    <div class="pin-notification-content">
+      ${message}
+    </div>
+  `;
+  
+  // Style the notification
+  Object.assign(notification.style, {
+    position: 'fixed',
+    top: '20px',
+    right: '20px',
+    background: color,
+    color: '#fff',
+    padding: '12px 16px',
+    borderRadius: '8px',
+    fontWeight: '600',
+    fontSize: '13px',
+    zIndex: '10006',
+    boxShadow: `0 4px 15px ${color}40`,
+    animation: 'slideInRight 0.3s ease, slideOutRight 0.3s ease 2.5s',
+    backdropFilter: 'blur(10px)'
+  });
+  
+  // Add to page
+  document.body.appendChild(notification);
+  
+  // Remove after animation
+  setTimeout(() => {
+    if (document.body.contains(notification)) {
+      document.body.removeChild(notification);
+    }
+  }, 3000);
+}
+
+function savePinState() {
+  const pinned = [];
+  document.querySelectorAll('.card.pinned').forEach(card => {
+    pinned.push(card.id);
+  });
+  localStorage.setItem('synthbat_pinned_cards', JSON.stringify(pinned));
+}
+
+function loadPinState() {
+  const saved = localStorage.getItem('synthbat_pinned_cards');
+  if (!saved) return;
+  
+  try {
+    const pinned = JSON.parse(saved);
+    pinned.forEach(cardId => {
+      const card = document.getElementById(cardId);
+      const btn = document.querySelector(`[data-card="${cardId}"].pin-btn`);
+      if (card && btn) {
+        card.classList.add('pinned');
+        card.draggable = false;
+        btn.classList.add('pinned');
+        btn.title = 'Desfixar Card';
+      }
+    });
+    console.log('📌 Estado de fixação dos cards restaurado');
+  } catch (error) {
+    console.error('Erro ao carregar estado de fixação:', error);
+  }
+}
 
 // --- Card Collapse/Expand Functionality ---
 document.querySelectorAll('.collapse-btn').forEach(btn => {
@@ -2483,6 +2605,11 @@ let currentTouchCard = null;
 document.addEventListener('touchstart', (e) => {
   const card = e.target.closest('.card');
   if (card && e.target.closest('.card-header')) {
+    // Check if card is pinned
+    if (card.classList.contains('pinned')) {
+      return;
+    }
+    
     touchStartX = e.touches[0].clientX;
     touchStartY = e.touches[0].clientY;
     currentTouchCard = card;
@@ -2512,8 +2639,9 @@ document.addEventListener('touchend', (e) => {
   }
 });
 
-// Load saved layout on startup
+// Load saved layout and pin state on startup
 loadLayout();
+loadPinState();
 
 // --- Splash Screen Implementation ---
 class SplashScreen {
