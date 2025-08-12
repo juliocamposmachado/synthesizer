@@ -585,6 +585,120 @@
       50%{opacity:1;transform:translate(-50%, -50%) scale(1)}
     }
     
+    /* Rhythm Patches */
+    .rhythm-patches{
+      background:rgba(0,0,0,0.2);
+      border-radius:12px;
+      margin:16px 0;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    
+    .patch-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 16px;
+      background:rgba(255,255,255,0.05);
+      cursor:pointer;
+      transition:all 0.2s ease;
+    }
+    
+    .patch-header:hover{
+      background:rgba(255,255,255,0.08);
+    }
+    
+    .patch-title{
+      font-size:14px;
+      font-weight:600;
+      color:var(--accent);
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+    }
+    
+    .patch-toggle{
+      background:none;
+      border:none;
+      color:var(--accent);
+      font-size:14px;
+      cursor:pointer;
+      transition:transform 0.2s ease;
+    }
+    
+    .patch-toggle.collapsed{
+      transform:rotate(-90deg);
+    }
+    
+    .patch-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));
+      gap:12px;
+      padding:16px;
+      max-height:300px;
+      transition:all 0.3s ease;
+      overflow:hidden;
+    }
+    
+    .patch-grid.collapsed{
+      max-height:0;
+      padding:0 16px;
+    }
+    
+    .patch-btn{
+      background:linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      border:2px solid rgba(255,255,255,0.15);
+      border-radius:12px;
+      padding:16px 12px;
+      cursor:pointer;
+      text-align:center;
+      transition:all 0.2s ease;
+      color:#fff;
+      position:relative;
+      overflow:hidden;
+    }
+    
+    .patch-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 8px 25px rgba(0,0,0,0.3);
+    }
+    
+    .patch-btn:active{
+      transform:translateY(0);
+    }
+    
+    .patch-btn.active{
+      border-color:var(--accent);
+      background:linear-gradient(135deg, rgba(31,182,255,0.2), rgba(31,182,255,0.1));
+      box-shadow:0 0 20px rgba(31,182,255,0.4);
+    }
+    
+    .patch-icon{
+      font-size:24px;
+      margin-bottom:8px;
+    }
+    
+    .patch-name{
+      font-size:12px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:1px;
+      margin-bottom:4px;
+    }
+    
+    .patch-bpm{
+      font-size:10px;
+      color:var(--muted);
+      font-weight:500;
+    }
+    
+    /* Genre-specific colors */
+    .funk-patch:hover{ border-color:#ff6b6b; background:linear-gradient(135deg, rgba(255,107,107,0.2), rgba(255,107,107,0.1)); }
+    .rock-patch:hover{ border-color:#ffa500; background:linear-gradient(135deg, rgba(255,165,0,0.2), rgba(255,165,0,0.1)); }
+    .pop-patch:hover{ border-color:#ff69b4; background:linear-gradient(135deg, rgba(255,105,180,0.2), rgba(255,105,180,0.1)); }
+    .trap-patch:hover{ border-color:#9b59b6; background:linear-gradient(135deg, rgba(155,89,182,0.2), rgba(155,89,182,0.1)); }
+    .house-patch:hover{ border-color:#00d2ff; background:linear-gradient(135deg, rgba(0,210,255,0.2), rgba(0,210,255,0.1)); }
+    .reggae-patch:hover{ border-color:#2ed573; background:linear-gradient(135deg, rgba(46,213,115,0.2), rgba(46,213,115,0.1)); }
+    
     /* Responsive adjustments */
     @media (max-width: 768px) {
       .app { padding: 12px; margin: 10px auto; flex-direction: column; }
@@ -597,6 +711,9 @@
       .seq-btn { padding: 6px 10px; font-size: 11px; }
       #xyCanvas { height: 300px; }
       .card-btn { width: 24px; height: 24px; font-size: 12px; }
+      .patch-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+      .patch-btn { padding: 12px 8px; }
+      .patch-icon { font-size: 20px; }
     }
   </style>
 </head>
@@ -761,6 +878,46 @@
           <div class="bpm-control">
             <span class="bpm-display">Tempo: <span id="seqBpm">120</span> BPM</span>
             <input id="seqBpmSlider" type="range" min="60" max="180" value="120">
+          </div>
+        </div>
+        
+        <!-- Rhythm Patches -->
+        <div class="rhythm-patches">
+          <div class="patch-header">
+            <span class="patch-title">🎼 Patches de Ritmo</span>
+            <button id="patchesToggle" class="patch-toggle">▼</button>
+          </div>
+          <div class="patch-grid" id="patchGrid">
+            <button class="patch-btn funk-patch" data-patch="funk">
+              <div class="patch-icon">🎸</div>
+              <div class="patch-name">FUNK</div>
+              <div class="patch-bpm">110 BPM</div>
+            </button>
+            <button class="patch-btn rock-patch" data-patch="rock">
+              <div class="patch-icon">🤘</div>
+              <div class="patch-name">ROCK</div>
+              <div class="patch-bpm">140 BPM</div>
+            </button>
+            <button class="patch-btn pop-patch" data-patch="pop">
+              <div class="patch-icon">⭐</div>
+              <div class="patch-name">POP</div>
+              <div class="patch-bpm">128 BPM</div>
+            </button>
+            <button class="patch-btn trap-patch" data-patch="trap">
+              <div class="patch-icon">💎</div>
+              <div class="patch-name">TRAP</div>
+              <div class="patch-bpm">140 BPM</div>
+            </button>
+            <button class="patch-btn house-patch" data-patch="house">
+              <div class="patch-icon">🎛️</div>
+              <div class="patch-name">HOUSE</div>
+              <div class="patch-bpm">124 BPM</div>
+            </button>
+            <button class="patch-btn reggae-patch" data-patch="reggae">
+              <div class="patch-icon">🌴</div>
+              <div class="patch-name">REGGAE</div>
+              <div class="patch-bpm">90 BPM</div>
+            </button>
           </div>
         </div>
         
@@ -1688,17 +1845,237 @@ document.addEventListener('touchend', (e) => {
 // Load saved layout on startup
 loadLayout();
 
+// --- Rhythm Patches System ---
+const rhythmPatches = {
+  funk: {
+    bpm: 110,
+    patterns: {
+      kick: [true, false, false, false, false, false, true, false, false, false, false, false, true, false, false, false],
+      snare: [false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false],
+      hat: [true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false],
+      openhat: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true],
+      crash: [true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+      piano: [true, false, false, true, false, false, true, false, false, true, false, false, true, false, false, false],
+      bass: [true, false, false, false, false, false, true, false, true, false, false, false, false, false, false, false],
+      lead: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
+    }
+  },
+  rock: {
+    bpm: 140,
+    patterns: {
+      kick: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
+      snare: [false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false],
+      hat: [true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false],
+      openhat: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+      crash: [true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false],
+      piano: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
+      bass: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
+      lead: [true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false]
+    }
+  },
+  pop: {
+    bpm: 128,
+    patterns: {
+      kick: [true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false],
+      snare: [false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false],
+      hat: [false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false],
+      openhat: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+      crash: [true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+      piano: [true, false, false, true, false, false, false, false, true, false, false, true, false, false, false, false],
+      bass: [true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false],
+      lead: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false]
+    }
+  },
+  trap: {
+    bpm: 140,
+    patterns: {
+      kick: [true, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false],
+      snare: [false, false, false, false, true, false, false, true, false, false, true, false, false, false, true, false],
+      hat: [true, true, false, true, true, true, false, true, true, true, false, true, true, true, false, true],
+      openhat: [false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false],
+      crash: [true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+      piano: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+      bass: [true, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false],
+      lead: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false]
+    }
+  },
+  house: {
+    bpm: 124,
+    patterns: {
+      kick: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
+      snare: [false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false],
+      hat: [false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false],
+      openhat: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true],
+      crash: [true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+      piano: [true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false],
+      bass: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
+      lead: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
+    }
+  },
+  reggae: {
+    bpm: 90,
+    patterns: {
+      kick: [false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false],
+      snare: [false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false],
+      hat: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
+      openhat: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+      crash: [true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+      piano: [false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false],
+      bass: [false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false],
+      lead: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false]
+    }
+  }
+};
+
+// Initialize patch controls
+function initPatchControls() {
+  // Patches toggle
+  const patchesToggle = document.getElementById('patchesToggle');
+  const patchGrid = document.getElementById('patchGrid');
+  
+  patchesToggle.addEventListener('click', () => {
+    const isCollapsed = patchGrid.classList.contains('collapsed');
+    
+    if (isCollapsed) {
+      patchGrid.classList.remove('collapsed');
+      patchesToggle.textContent = '▼';
+      patchesToggle.classList.remove('collapsed');
+    } else {
+      patchGrid.classList.add('collapsed');
+      patchesToggle.textContent = '▶';
+      patchesToggle.classList.add('collapsed');
+    }
+  });
+  
+  // Patch buttons
+  document.querySelectorAll('.patch-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const patchName = btn.dataset.patch;
+      loadRhythmPatch(patchName);
+      
+      // Visual feedback
+      document.querySelectorAll('.patch-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      // Show notification
+      showPatchNotification(patchName);
+    });
+  });
+}
+
+function loadRhythmPatch(patchName) {
+  const patch = rhythmPatches[patchName];
+  if (!patch) {
+    console.error('Patch não encontrado:', patchName);
+    return;
+  }
+  
+  // Stop current playback
+  if (sequencer.playing) {
+    stopSequencer();
+  }
+  
+  // Set BPM
+  sequencer.bpm = patch.bpm;
+  seqBpmSlider.value = patch.bpm;
+  seqBpmDisplay.textContent = patch.bpm;
+  
+  // Load patterns
+  sequencer.tracks.forEach(track => {
+    if (patch.patterns[track.sound]) {
+      track.pattern = [...patch.patterns[track.sound]];
+    } else {
+      track.pattern.fill(false);
+    }
+  });
+  
+  // Refresh UI
+  initSequencer();
+  
+  console.log(`🎼 Patch "${patchName.toUpperCase()}" carregado! BPM: ${patch.bpm}`);
+}
+
+function showPatchNotification(patchName) {
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = 'patch-notification';
+  notification.innerHTML = `
+    <div class="patch-notification-content">
+      🎼 <strong>${patchName.toUpperCase()}</strong> carregado!
+    </div>
+  `;
+  
+  // Style the notification
+  Object.assign(notification.style, {
+    position: 'fixed',
+    top: '20px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    background: 'linear-gradient(135deg, var(--accent), #00d2ff)',
+    color: '#fff',
+    padding: '12px 24px',
+    borderRadius: '25px',
+    fontWeight: '600',
+    fontSize: '14px',
+    zIndex: '10003',
+    boxShadow: '0 8px 25px rgba(31,182,255,0.4)',
+    animation: 'slideInDown 0.3s ease, slideOutUp 0.3s ease 2s',
+    backdropFilter: 'blur(10px)'
+  });
+  
+  // Add to page
+  document.body.appendChild(notification);
+  
+  // Remove after animation
+  setTimeout(() => {
+    if (document.body.contains(notification)) {
+      document.body.removeChild(notification);
+    }
+  }, 2500);
+}
+
+// Add CSS animations for notifications
+const notificationStyles = document.createElement('style');
+notificationStyles.textContent = `
+  @keyframes slideInDown {
+    0% {
+      transform: translateX(-50%) translateY(-100px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideOutUp {
+    0% {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(-50%) translateY(-100px);
+      opacity: 0;
+    }
+  }
+`;
+document.head.appendChild(notificationStyles);
+
+// Initialize patch controls when page loads
+initPatchControls();
+
 // Final note: friendly help
-console.log('🎵 Pad Musical Completo com Layout Customizável carregado! 🎵');
+console.log('🎵 SynthBat Studio com Patches de Ritmo carregado! 🎵');
 console.log('- 18 instrumentos musicais coloridos');
 console.log('- Sequenciador de 16 steps com 8 trilhas');
+console.log('- 6 patches de ritmo pré-configurados (Funk, Rock, Pop, Trap, House, Reggae)');
 console.log('- Gravação de áudio em tempo real');
 console.log('- Salvamento/carregamento de sequências');
 console.log('- Área XY para controle em tempo real');
 console.log('- Interface drag-and-drop personalizável');
 console.log('- Cards recolhíveis para organizar o espaço');
 console.log('- Layout salvo automaticamente no navegador');
-console.log('Divirta-se criando música! 🎶🎛️📱');
+console.log('Divirta-se criando música! 🎶🎛️📱🎼');
 </script>
 </body>
 </html>
