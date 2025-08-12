@@ -332,9 +332,9 @@
     
     .sequencer-table{
       width:100%;
-      min-width:900px;
+      min-width:1200px;
       border-collapse:separate;
-      border-spacing:2px;
+      border-spacing:1px;
       background:rgba(0,0,0,0.2);
       border-radius:8px;
     }
@@ -386,10 +386,10 @@
     .step-cell{
       background:linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
       border:2px solid rgba(255,255,255,0.1);
-      width:32px;
-      height:32px;
+      width:24px;
+      height:24px;
       cursor:pointer;
-      border-radius:8px;
+      border-radius:6px;
       position:relative;
       transition:all 0.2s ease;
       text-align:center;
@@ -681,10 +681,10 @@
     
     .patch-grid{
       display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));
-      gap:12px;
-      padding:16px;
-      max-height:300px;
+      grid-template-columns:repeat(auto-fit, minmax(100px, 1fr));
+      gap:8px;
+      padding:12px;
+      max-height:200px;
       transition:all 0.3s ease;
       overflow:hidden;
     }
@@ -697,8 +697,8 @@
     .patch-btn{
       background:linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
       border:2px solid rgba(255,255,255,0.15);
-      border-radius:12px;
-      padding:16px 12px;
+      border-radius:8px;
+      padding:8px 6px;
       cursor:pointer;
       text-align:center;
       transition:all 0.2s ease;
@@ -723,20 +723,20 @@
     }
     
     .patch-icon{
-      font-size:24px;
-      margin-bottom:8px;
-    }
-    
-    .patch-name{
-      font-size:12px;
-      font-weight:700;
-      text-transform:uppercase;
-      letter-spacing:1px;
+      font-size:18px;
       margin-bottom:4px;
     }
     
-    .patch-bpm{
+    .patch-name{
       font-size:10px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      margin-bottom:2px;
+    }
+    
+    .patch-bpm{
+      font-size:9px;
       color:var(--muted);
       font-weight:500;
     }
@@ -761,9 +761,9 @@
       .seq-btn { padding: 6px 10px; font-size: 11px; }
       #xyCanvas { height: 300px; }
       .card-btn { width: 24px; height: 24px; font-size: 12px; }
-      .patch-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
-      .patch-btn { padding: 12px 8px; }
-      .patch-icon { font-size: 20px; }
+      .patch-grid { grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); }
+      .patch-btn { padding: 6px 4px; }
+      .patch-icon { font-size: 16px; }
     }
   </style>
 </head>
@@ -911,7 +911,7 @@
         <div class="card-header">
           <div>
             <h2 class="card-title">🎵 Sequenciador</h2>
-            <p class="card-subtitle">16 Steps • 8 Trilhas</p>
+            <p class="card-subtitle">32 Steps • 8 Trilhas</p>
           </div>
           <div class="card-controls">
             <div class="card-btn collapse-btn" title="Recolher/Expandir" data-card="sequencerCard">−</div>
@@ -1016,16 +1016,16 @@ const sequencer = {
   playing: false,
   recording: false,
   currentStep: 0,
-  steps: 16,
+  steps: 32,
   tracks: [
-    {name: 'KICK', sound: 'kick', pattern: new Array(16).fill(false)},
-    {name: 'SNARE', sound: 'snare', pattern: new Array(16).fill(false)},
-    {name: 'HAT', sound: 'hat', pattern: new Array(16).fill(false)},
-    {name: 'OPEN HAT', sound: 'openhat', pattern: new Array(16).fill(false)},
-    {name: 'CRASH', sound: 'crash', pattern: new Array(16).fill(false)},
-    {name: 'PIANO', sound: 'piano', pattern: new Array(16).fill(false)},
-    {name: 'BASS', sound: 'bass', pattern: new Array(16).fill(false)},
-    {name: 'LEAD', sound: 'lead', pattern: new Array(16).fill(false)}
+    {name: 'KICK', sound: 'kick', pattern: new Array(32).fill(false)},
+    {name: 'SNARE', sound: 'snare', pattern: new Array(32).fill(false)},
+    {name: 'HAT', sound: 'hat', pattern: new Array(32).fill(false)},
+    {name: 'OPEN HAT', sound: 'openhat', pattern: new Array(32).fill(false)},
+    {name: 'CRASH', sound: 'crash', pattern: new Array(32).fill(false)},
+    {name: 'PIANO', sound: 'piano', pattern: new Array(32).fill(false)},
+    {name: 'BASS', sound: 'bass', pattern: new Array(32).fill(false)},
+    {name: 'LEAD', sound: 'lead', pattern: new Array(32).fill(false)}
   ],
   interval: null,
   audioRecorder: null,
@@ -1903,79 +1903,79 @@ const rhythmPatches = {
   funk: {
     bpm: 110,
     patterns: {
-      kick: [true, false, false, false, false, false, true, false, false, false, false, false, true, false, false, false],
-      snare: [false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false],
-      hat: [true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false],
-      openhat: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true],
-      crash: [true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-      piano: [true, false, false, true, false, false, true, false, false, true, false, false, true, false, false, false],
-      bass: [true, false, false, false, false, false, true, false, true, false, false, false, false, false, false, false],
-      lead: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
+      kick: [true, false, false, false, false, false, true, false, false, false, false, false, true, false, false, false, true, false, false, false, false, false, true, false, false, false, false, false, true, false, false, false],
+      snare: [false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false],
+      hat: [true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false],
+      openhat: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true],
+      crash: [true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+      piano: [true, false, false, true, false, false, true, false, false, true, false, false, true, false, false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false, false, false],
+      bass: [true, false, false, false, false, false, true, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, true, false, true, false, false, false, false, false, false, false],
+      lead: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
     }
   },
   rock: {
     bpm: 140,
     patterns: {
-      kick: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
-      snare: [false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false],
-      hat: [true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false],
-      openhat: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-      crash: [true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false],
-      piano: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
-      bass: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
-      lead: [true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false]
+      kick: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
+      snare: [false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false],
+      hat: [true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false],
+      openhat: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+      crash: [true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false],
+      piano: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
+      bass: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
+      lead: [true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false]
     }
   },
   pop: {
     bpm: 128,
     patterns: {
-      kick: [true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false],
-      snare: [false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false],
-      hat: [false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false],
-      openhat: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-      crash: [true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-      piano: [true, false, false, true, false, false, false, false, true, false, false, true, false, false, false, false],
-      bass: [true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false],
-      lead: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false]
+      kick: [true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false],
+      snare: [false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false],
+      hat: [false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false],
+      openhat: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+      crash: [true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+      piano: [true, false, false, true, false, false, false, false, true, false, false, true, false, false, false, false, true, false, false, true, false, false, false, false, true, false, false, true, false, false, false, false],
+      bass: [true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false],
+      lead: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false]
     }
   },
   trap: {
     bpm: 140,
     patterns: {
-      kick: [true, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false],
-      snare: [false, false, false, false, true, false, false, true, false, false, true, false, false, false, true, false],
-      hat: [true, true, false, true, true, true, false, true, true, true, false, true, true, true, false, true],
-      openhat: [false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false],
-      crash: [true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-      piano: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-      bass: [true, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false],
-      lead: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false]
+      kick: [true, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false],
+      snare: [false, false, false, false, true, false, false, true, false, false, true, false, false, false, true, false, false, false, false, false, true, false, false, true, false, false, true, false, false, false, true, false],
+      hat: [true, true, false, true, true, true, false, true, true, true, false, true, true, true, false, true, true, true, false, true, true, true, false, true, true, true, false, true, true, true, false, true],
+      openhat: [false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false],
+      crash: [true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+      piano: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+      bass: [true, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false],
+      lead: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false]
     }
   },
   house: {
     bpm: 124,
     patterns: {
-      kick: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
-      snare: [false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false],
-      hat: [false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false],
-      openhat: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true],
-      crash: [true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-      piano: [true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false],
-      bass: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
-      lead: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
+      kick: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
+      snare: [false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false],
+      hat: [false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false],
+      openhat: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true],
+      crash: [true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+      piano: [true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false],
+      bass: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
+      lead: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
     }
   },
   reggae: {
     bpm: 90,
     patterns: {
-      kick: [false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false],
-      snare: [false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false],
-      hat: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
-      openhat: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-      crash: [true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-      piano: [false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false],
-      bass: [false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false],
-      lead: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false]
+      kick: [false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false],
+      snare: [false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false],
+      hat: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false],
+      openhat: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+      crash: [true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+      piano: [false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false],
+      bass: [false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false],
+      lead: [true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false]
     }
   }
 };
