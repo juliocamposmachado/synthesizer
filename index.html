@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sintetizador + Bateria Virtual — Demo</title>
+  <style>
+    :root{--bg:#0b1220;--card:#0f1724;--accent:#1fb6ff;--muted:#98a0b3}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;color:#e6eef8;background:linear-gradient(180deg,#071029 0%, #071b2f 100%)}
+    .app{max-width:1100px;margin:28px auto;padding:18px;display:grid;grid-template-columns:360px 1fr;gap:18px}
+    .card{background:rgba(255,255,255,0.03);border-radius:12px;padding:14px;box-shadow:0 6px 20px rgba(2,6,23,0.6)}
+    h1{margin:6px 0 12px;font-size:18px}
+    .pads{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .pad{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.04);padding:12px;border-radius:8px;cursor:pointer;user-select:none;text-align:center}
+    .pad:active{transform:translateY(2px)}
+    .center{display:flex;flex-direction:column;gap:12px}
+    #xyCanvas{width:100%;height:420px;background:linear-gradient(180deg,#071b2f,#04202a);border-radius:10px;touch-action:none}
+    .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    label{font-size:12px;color:var(--muted)}
+    input[type=range]{-webkit-appearance:none;height:6px;background:rgba(255,255,255,0.05);border-radius:6px}
+    .row{display:flex;gap:8px;align-items:center}
+    button{background:var(--accent);border:none;color:#022233;padding:8px 12px;border-radius:8px;cursor:pointer}
+    .muted-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    .meta{font-size:12px;color:var(--muted)}
+    .preset-list{display:flex;gap:8px;flex-wrap:wrap}
+    .preset{background:rgba(255,255,255,0.02);padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.03);cursor:pointer}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="card">
+      <h1>Sintetizador + Bateria Virtual</h1>
+      <div class="meta">Toque os pads ou use a área central (XY) para manipular tom e timbre. Suporte para toque e mouse.</div>
+      <hr style="margin:12px 0;border-color:rgba(255,255,255,0.03)" />
+
+      <div>
+        <div style="margin-bottom:8px"><strong>Pads de bateria</strong></div>
+        <div class="pads">
+          <div class="pad" data-pad="kick">Bumbo (Kick)</div>
+          <div class="pad" data-pad="snare">Caixa (Snare)</div>
+          <div class="pad" data-pad="hat">Chimbal (Hat)</div>
+          <div class="pad" data-pad="tom">Tom</div>
+        </div>
+      </div>
+
+      <hr style="margin:12px 0;border-color:rgba(255,255,255,0.03)" />
+
+      <div>
+        <div style="margin-bottom:8px"><strong>Controles</strong></div>
+        <div class="controls">
+          <div class="row"><label>BPM</label><input id="bpm" type="range" min="40" max="200" value="100" /></div>
+          <div class="row"><label>Volume Mestre</label><input id="masterVol" type="range" min="0" max="1" step="0.01" value="0.9" /></div>
+          <div class="row"><label>Pitch Range</label><input id="pitchRange" type="range" min="0.2" max="3" step="0.01" value="1.5" /></div>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button id="startStop">Start</button>
+          <button id="metroToggle" class="muted-btn">Metrônomo</button>
+          <button id="savePreset" class="muted-btn">Salvar Preset</button>
+        </div>
+      </div>
+
+      <hr style="margin:12px 0;border-color:rgba(255,255,255,0.03)" />
+
+      <div>
+        <div style="margin-bottom:8px"><strong>Presets</strong></div>
+        <div class="preset-list" id="presets"></div>
+      </div>
+    </div>
+
+    <div class="card center">
+      <h1>Área Central — XY Pad (toque para controlar nota / batida)</h1>
+      <canvas id="xyCanvas"></canvas>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="meta">Eixo X: variação entre dois timbres / samples • Eixo Y: pitch/volume</div>
+        <div>
+          <label>Modo</label>
+          <select id="mode">
+            <option value="sampleBlend">Misturar Samples</option>
+            <option value="oscillator">Oscilador (sintet)</option>
+            <option value="drumMorph">Morph Bateria</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// --- Setup WebAudio ---
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const ctx = new AudioContext();
+let masterGain = ctx.createGain(); masterGain.gain.value = 0.9; masterGain.connect(ctx.destination);
+
+// Basic utilities
+function now(){return ctx.currentTime}
+
+// State
+const state = {
+  bpm:100, playing:false, metro:false,
+  pitchRange:1.5, masterVol:0.9,
+  mode:'sampleBlend'
+}
+
+// Wire controls
+const bpmSlider = document.getElementById('bpm');
+const masterVol = document.getElementById('masterVol');
+const pitchRange = document.getElementById('pitchRange');
+const startStopBtn = document.getElementById('startStop');
+const metroToggle = document.getElementById('metroToggle');
+const xyCanvas = document.getElementById('xyCanvas');
+const modeSel = document.getElementById('mode');
+
+bpmSlider.addEventListener('input',()=>{state.bpm=+bpmSlider.value});
+masterVol.addEventListener('input',()=>{state.masterVol=+masterVol.value; masterGain.gain.setValueAtTime(state.masterVol, now());});
+pitchRange.addEventListener('input',()=>{state.pitchRange=+pitchRange.value});
+modeSel.addEventListener('change',()=>{state.mode=modeSel.value; drawGuide();});
+
+startStopBtn.addEventListener('click',()=>{ if(!state.playing){ startTransport(); } else { stopTransport(); } });
+metroToggle.addEventListener('click',()=>{ state.metro = !state.metro; metroToggle.style.opacity = state.metro?1:0.6; });
+
+// --- Drum pads synthesis (simple) ---
+function playKick(time){
+  const g = ctx.createGain(); g.gain.value = 1; g.connect(masterGain);
+  const o = ctx.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(150, time);
+  o.frequency.exponentialRampToValueAtTime(40, time+0.5);
+  g.gain.setValueAtTime(0.0001, time);
+  g.gain.exponentialRampToValueAtTime(1.2, time+0.001);
+  g.gain.exponentialRampToValueAtTime(0.001, time+0.6);
+  o.connect(g); o.start(time); o.stop(time+0.7);
+}
+function playSnare(time){
+  const noise = ctx.createBufferSource();
+  noise.buffer = makeNoiseBuffer();
+  const nFilter = ctx.createBiquadFilter(); nFilter.type='highpass'; nFilter.frequency.value = 1000;
+  const g = ctx.createGain(); g.gain.value=1; g.connect(masterGain);
+  noise.connect(nFilter); nFilter.connect(g);
+  g.gain.setValueAtTime(1, time); g.gain.exponentialRampToValueAtTime(0.01, time+0.4);
+  noise.start(time); noise.stop(time+0.5);
+}
+function playHat(time){
+  const o = ctx.createOscillator(); o.type='square'; o.frequency.value=8000;
+  const g = ctx.createGain(); g.gain.value=0.0001; g.connect(masterGain);
+  o.connect(g); o.start(time);
+  g.gain.setValueAtTime(0.0001, time); g.gain.exponentialRampToValueAtTime(0.6, time+0.001); g.gain.exponentialRampToValueAtTime(0.0001, time+0.12);
+  o.stop(time+0.15);
+}
+function playTom(time){
+  const o = ctx.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(220, time); o.frequency.exponentialRampToValueAtTime(120, time+0.4);
+  const g = ctx.createGain(); g.gain.value=1; g.connect(masterGain);
+  g.gain.setValueAtTime(1, time); g.gain.exponentialRampToValueAtTime(0.001, time+0.6);
+  o.connect(g); o.start(time); o.stop(time+0.8);
+}
+
+function makeNoiseBuffer(){
+  const len = ctx.sampleRate * 1.0;
+  const buf = ctx.createBuffer(1,len,ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for(let i=0;i<len;i++) data[i] = Math.random()*2-1;
+  return buf;
+}
+
+// Hook pads UI
+document.querySelectorAll('.pad').forEach(el=>{
+  el.addEventListener('pointerdown',async (e)=>{ await ensureResume(); const p = el.dataset.pad; const t = now(); if(p==='kick') playKick(t); if(p==='snare') playSnare(t); if(p==='hat') playHat(t); if(p==='tom') playTom(t); });
+});
+
+// --- Transport / metronome ---
+let metroInterval = null;
+function startTransport(){ state.playing=true; startStopBtn.textContent='Stop'; if(state.metro) startMetro(); }
+function stopTransport(){ state.playing=false; startStopBtn.textContent='Start'; stopMetro(); }
+function startMetro(){ stopMetro(); const beatInterval = 60/state.bpm; metroInterval = setInterval(()=>{ const t=now()+0.02; playClick(t); }, beatInterval*1000); }
+function stopMetro(){ if(metroInterval) clearInterval(metroInterval); metroInterval=null; }
+function playClick(time){ const o = ctx.createOscillator(); const g = ctx.createGain(); g.connect(masterGain); o.connect(g); o.frequency.value=1200; g.gain.setValueAtTime(0.0001,time); g.gain.exponentialRampToValueAtTime(0.8,time+0.001); g.gain.exponentialRampToValueAtTime(0.0001,time+0.08); o.start(time); o.stop(time+0.1); }
+
+// Ensure audio resume on interaction (mobile policies)
+async function ensureResume(){ if(ctx.state==='suspended'){ await ctx.resume(); } }
+window.addEventListener('pointerdown', ()=>{ ensureResume(); });
+
+// --- XY Pad Implementation ---
+const canvas = xyCanvas; const rect = ()=>canvas.getBoundingClientRect();
+canvas.width = Math.floor(rect().width * devicePixelRatio);
+canvas.height = Math.floor(rect().height * devicePixelRatio);
+const g = canvas.getContext('2d'); g.scale(devicePixelRatio, devicePixelRatio);
+let pointer = null; const centerA={x:80,y:80}; const centerB={x:canvas.width/devicePixelRatio-80,y:canvas.height/devicePixelRatio-80};
+function drawGuide(){ g.clearRect(0,0,canvas.width/devicePixelRatio,canvas.height/devicePixelRatio);
+  // gradient background
+  const W = canvas.width/devicePixelRatio, H = canvas.height/devicePixelRatio;
+  const grd = g.createLinearGradient(0,0,W,H); grd.addColorStop(0,'rgba(31,182,255,0.06)'); grd.addColorStop(1,'rgba(255,255,255,0.02)');
+  g.fillStyle = grd; g.fillRect(0,0,W,H);
+  // draw points A and B
+  g.fillStyle='rgba(255,255,255,0.06)'; g.beginPath(); g.arc(centerA.x,centerA.y,12,0,Math.PI*2); g.fill();
+  g.beginPath(); g.arc(centerB.x,centerB.y,12,0,Math.PI*2); g.fill();
+  // line between
+  g.strokeStyle='rgba(255,255,255,0.04)'; g.lineWidth=2; g.beginPath(); g.moveTo(centerA.x,centerA.y); g.lineTo(centerB.x,centerB.y); g.stroke();
+  // pointer
+  if(pointer){ g.fillStyle='rgba(31,182,255,0.9)'; g.beginPath(); g.arc(pointer.x,pointer.y,10,0,Math.PI*2); g.fill(); }
+}
+
+drawGuide();
+
+function interp(a,b,t){return a+(b-a)*t}
+
+async function handlePointer(x,y){ await ensureResume(); pointer = {x,y}; drawGuide();
+  // compute t along line A->B projection
+  const ax=centerA.x, ay=centerA.y, bx=centerB.x, by=centerB.y;
+  const vx = bx-ax, vy = by-ay; const wx = x-ax, wy = y-ay;
+  const vlen2 = vx*vx+vy*vy; let t = 0; if(vlen2>0) t = Math.max(0, Math.min(1, (vx*wx + vy*wy)/vlen2));
+  // vertical influence (distance from line) -> map to pitch or volume
+  const projx = interp(ax,bx,t), projy = interp(ay,by,t);
+  const dist = Math.hypot(x-projx, y-projy);
+  const maxDist = Math.min(canvas.width/devicePixelRatio, canvas.height/devicePixelRatio)/2;
+  const yInfluence = 1 - Math.min(1, dist/maxDist);
+
+  // Depending on mode, trigger appropriate sound
+  if(state.mode==='oscillator'){
+    playXYOsc(t, yInfluence);
+  } else if(state.mode==='sampleBlend'){
+    playBlendSample(t, yInfluence);
+  } else if(state.mode==='drumMorph'){
+    playMorphDrum(t, yInfluence);
+  }
+}
+
+// --- XY mode implementations ---
+function playXYOsc(t,yInf){
+  const baseFreq = 220; // A3
+  const freq = baseFreq * Math.pow(2, (t-0.5)*state.pitchRange);
+  const o = ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=freq;
+  const g = ctx.createGain(); g.gain.value = yInf*0.6; g.connect(masterGain);
+  // simple filter varying with t
+  const f = ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value = interp(500,5000,t);
+  o.connect(f); f.connect(g);
+  o.start(); o.stop(now()+0.6);
+}
+
+function playBlendSample(t,yInf){
+  // we synthesize two simple timbres and blend between them
+  // timbreA = sine, timbreB = square
+  const baseFreq = 440 * Math.pow(2,(t-0.5)*state.pitchRange);
+  const a = ctx.createOscillator(); a.type='sine'; a.frequency.value=baseFreq;
+  const b = ctx.createOscillator(); b.type='square'; b.frequency.value=baseFreq;
+  const gA = ctx.createGain(); const gB = ctx.createGain(); gA.connect(masterGain); gB.connect(masterGain);
+  gA.gain.value = 1-t; gB.gain.value = t;
+  const env = ctx.createGain(); env.connect(masterGain);
+  a.connect(gA); b.connect(gB);
+  gA.connect(env); gB.connect(env);
+  env.gain.setValueAtTime(yInf,now()); env.gain.exponentialRampToValueAtTime(0.001, now()+0.7);
+  a.start(); b.start(); a.stop(now()+0.7); b.stop(now()+0.7);
+}
+
+function playMorphDrum(t,yInf){
+  // choose mix between kick and snare
+  const time = now();
+  if(t<0.4){ playKick(time); }
+  else if(t<0.7){ playTom(time); }
+  else { playSnare(time); }
+}
+
+// Pointer events
+let isDown=false;
+function getXYFromEvent(e){ const r=rect(); const x = (e.clientX||e.touches[0].clientX) - r.left; const y = (e.clientY||e.touches[0].clientY) - r.top; return {x,y}; }
+canvas.addEventListener('pointerdown',(ev)=>{ isDown=true; const p=getXYFromEvent(ev); handlePointer(p.x,p.y); });
+canvas.addEventListener('pointermove',(ev)=>{ if(!isDown) return; const p=getXYFromEvent(ev); handlePointer(p.x,p.y); });
+canvas.addEventListener('pointerup',(ev)=>{ isDown=false; pointer=null; drawGuide(); });
+canvas.addEventListener('pointercancel',(ev)=>{ isDown=false; pointer=null; drawGuide(); });
+
+// Resize handling
+window.addEventListener('resize',()=>{ canvas.width = Math.floor(rect().width * devicePixelRatio); canvas.height = Math.floor(rect().height * devicePixelRatio); g.scale(devicePixelRatio,devicePixelRatio); centerB.x = canvas.width/devicePixelRatio-80; centerB.y = canvas.height/devicePixelRatio-80; drawGuide(); });
+
+// Presets (localStorage)
+function savePreset(){ const p = {bpm:state.bpm, pitchRange:state.pitchRange, masterVol:state.masterVol, mode:state.mode}; const arr = JSON.parse(localStorage.getItem('sint_presets')||'[]'); arr.push(p); localStorage.setItem('sint_presets', JSON.stringify(arr)); renderPresets(); }
+function renderPresets(){ const list = document.getElementById('presets'); list.innerHTML=''; const arr = JSON.parse(localStorage.getItem('sint_presets')||'[]'); arr.forEach((pr,i)=>{ const el=document.createElement('div'); el.className='preset'; el.textContent=`Preset ${i+1} (BPM ${pr.bpm})`; el.addEventListener('click',()=>{ state.bpm=pr.bpm; bpmSlider.value=pr.bpm; state.pitchRange=pr.pitchRange; pitchRange.value=pr.pitchRange; state.masterVol=pr.masterVol; masterVol.value=pr.masterVol; state.mode=pr.mode; modeSel.value=pr.mode; }); list.appendChild(el); }); }
+
+document.getElementById('savePreset').addEventListener('click',savePreset);
+renderPresets();
+
+// Utility: resume audio on first gesture
+window.addEventListener('pointerdown',()=>{ if(ctx.state==='suspended') ctx.resume(); });
+
+// Final note: friendly help
+console.log('Sintetizador pronto. Toque na área central para experimentar modos: oscillator / sampleBlend / drumMorph.');
+</script>
+</body>
+</html>
